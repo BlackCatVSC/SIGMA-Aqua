@@ -1,0 +1,375 @@
+-- ==========================================
+-- SCRIPT DDL: SISTEMA SIGMA-Aqua (Oracle DB)
+-- ==========================================
+
+-- 1. TABLA EMPRESA
+CREATE TABLE empresa (
+    id_empresa  NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_empresa PRIMARY KEY,
+    nombre      VARCHAR2(100) NOT NULL,
+    rut         VARCHAR2(12) NOT NULL CONSTRAINT uk_empresa_rut UNIQUE,
+    direccion   VARCHAR2(200),
+    telefono    VARCHAR2(20),
+    correo      VARCHAR2(100)
+);
+
+-- 2. TABLA ROL
+CREATE TABLE rol (
+    id_rol      NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_rol PRIMARY KEY,
+    nombre_rol  VARCHAR2(50) NOT NULL,
+    descripcion VARCHAR2(250)
+);
+
+-- 3. TABLA PERMISO
+CREATE TABLE permiso (
+    id_permiso     NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_permiso PRIMARY KEY,
+    nombre_permiso VARCHAR2(50) NOT NULL,
+    descripcion    VARCHAR2(250)
+);
+
+-- 4. TABLA ROL_PERMISO
+CREATE TABLE rol_permiso (
+    id_rol     NUMBER NOT NULL,
+    id_permiso NUMBER NOT NULL,
+    CONSTRAINT pk_rol_permiso PRIMARY KEY (id_rol, id_permiso),
+    CONSTRAINT fk_rp_rol FOREIGN KEY (id_rol) REFERENCES rol(id_rol) ON DELETE CASCADE,
+    CONSTRAINT fk_rp_permiso FOREIGN KEY (id_permiso) REFERENCES permiso(id_permiso) ON DELETE CASCADE
+);
+
+-- 5. TABLA ZONA SANITARIA
+CREATE TABLE zona_sanitaria (
+    id_zona       NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_zona PRIMARY KEY,
+    codigo_oficial VARCHAR2(20) NOT NULL CONSTRAINT uk_zona_codigo UNIQUE,
+    nombre_zona   VARCHAR2(100) NOT NULL,
+    region        VARCHAR2(100) NOT NULL,
+    provincia     VARCHAR2(100),
+    estado        VARCHAR2(30) DEFAULT 'productivo' CHECK (estado IN ('productivo', 'descanso sanitario', 'cuarentena'))
+);
+
+-- 6. TABLA CENTRO DE CULTIVO
+CREATE TABLE centro_cultivo (
+    id_centro               NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_centro PRIMARY KEY,
+    nombre                  VARCHAR2(100) NOT NULL,
+    ubicacion               VARCHAR2(200),
+    volumen_centro_m3       NUMBER(12,2),
+    densidad_maxima_kg_m3   NUMBER(6,2),
+    capacidad_max           NUMBER(10),
+    tipo_agua               VARCHAR2(50),
+    profundidad             NUMBER(6,2),
+    fecha_inicio            DATE,
+    codigo_permiso_concesion VARCHAR2(50),
+    estado                  VARCHAR2(30) DEFAULT 'operativo',
+    id_empresa              NUMBER NOT NULL,
+    id_zona                 NUMBER NOT NULL,
+    CONSTRAINT fk_centro_empresa FOREIGN KEY (id_empresa) REFERENCES empresa(id_empresa),
+    CONSTRAINT fk_centro_zona FOREIGN KEY (id_zona) REFERENCES zona_sanitaria(id_zona)
+);
+
+-- 7. TABLA TRABAJADOR
+CREATE TABLE trabajador (
+    id_trabajador  NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_trabajador PRIMARY KEY,
+    nombre         VARCHAR2(50) NOT NULL,
+    apellido       VARCHAR2(50) NOT NULL,
+    rut            VARCHAR2(12) NOT NULL CONSTRAINT uk_trabajador_rut UNIQUE,
+    cargo          VARCHAR2(50),
+    telefono       VARCHAR2(20),
+    correo         VARCHAR2(100),
+    estado         VARCHAR2(20) DEFAULT 'activo',
+    fecha_contrato DATE,
+    id_centro      NUMBER,
+    CONSTRAINT fk_trabajador_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro)
+);
+
+-- 8. TABLA VETERINARIO
+CREATE TABLE veterinario (
+    id_veterinario      NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_veterinario PRIMARY KEY,
+    nombre              VARCHAR2(50) NOT NULL,
+    apellido            VARCHAR2(50) NOT NULL,
+    rut                 VARCHAR2(12) NOT NULL CONSTRAINT uk_veterinario_rut UNIQUE,
+    registro_profesional VARCHAR2(50) NOT NULL,
+    email               VARCHAR2(100),
+    telefono            VARCHAR2(20),
+    tipo_contrato       VARCHAR2(50),
+    especialidad        VARCHAR2(100),
+    firma_digital       VARCHAR2(255),
+    estado              VARCHAR2(20) DEFAULT 'activo' CHECK (estado IN ('activo', 'inactivo', 'licencia')),
+    fecha_contrato      DATE
+);
+
+-- 9. TABLA PROVEEDOR
+CREATE TABLE proveedor (
+    id_proveedor   NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_proveedor PRIMARY KEY,
+    nombre         VARCHAR2(100) NOT NULL,
+    rut            VARCHAR2(12) NOT NULL CONSTRAINT uk_proveedor_rut UNIQUE,
+    direccion      VARCHAR2(200),
+    telefono       VARCHAR2(20),
+    correo         VARCHAR2(100),
+    tipo_proveedor VARCHAR2(50) CHECK (tipo_proveedor IN ('alimento', 'medicamentos', 'equipamiento', 'general'))
+);
+
+-- 10. TABLA USUARIO
+CREATE TABLE usuario (
+    id_usuario    NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_usuario PRIMARY KEY,
+    correo        VARCHAR2(100) NOT NULL CONSTRAINT uk_usuario_correo UNIQUE,
+    password_hash VARCHAR2(255) NOT NULL,
+    estado        VARCHAR2(20) DEFAULT 'activo',
+    id_rol        NUMBER NOT NULL,
+    id_trabajador NUMBER,
+    id_veterinario NUMBER,
+    id_proveedor  NUMBER,
+    CONSTRAINT fk_usuario_rol FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
+    CONSTRAINT fk_usuario_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador),
+    CONSTRAINT fk_usuario_veterinario FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario),
+    CONSTRAINT fk_usuario_proveedor FOREIGN KEY (id_proveedor) REFERENCES proveedor(id_proveedor)
+);
+
+-- 11. TABLA ESPECIE
+CREATE TABLE especie (
+    id_especie       NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_especie PRIMARY KEY,
+    nombre_comun     VARCHAR2(50) NOT NULL,
+    nombre_cientifico VARCHAR2(100) NOT NULL
+);
+
+-- 12. TABLA LOTE
+CREATE TABLE lote (
+    id_lote         NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_lote PRIMARY KEY,
+    id_centro       NUMBER NOT NULL,
+    id_especie      NUMBER NOT NULL,
+    fecha_ingreso   DATE NOT NULL,
+    cantidad_inicial NUMBER(10) NOT NULL,
+    cantidad_actual  NUMBER(10) NOT NULL,
+    estado          VARCHAR2(30) DEFAULT 'en cultivo',
+    CONSTRAINT fk_lote_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro),
+    CONSTRAINT fk_lote_especie FOREIGN KEY (id_especie) REFERENCES especie(id_especie)
+);
+
+-- 13. TABLA MUESTREO / BIOMETRÍA
+CREATE TABLE muestreo (
+    id_muestreo     NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_muestreo PRIMARY KEY,
+    id_lote         NUMBER NOT NULL,
+    fecha           DATE DEFAULT SYSDATE NOT NULL,
+    peso_promedio   NUMBER(8,2) NOT NULL,
+    cantidad_muestra NUMBER(6) NOT NULL,
+    id_trabajador   NUMBER NOT NULL,
+    CONSTRAINT fk_muestreo_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_muestreo_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 14. TABLA TIPO_ALIMENTO
+CREATE TABLE tipo_alimento (
+    id_tipo_alimento NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_tipo_alimento PRIMARY KEY,
+    nombre           VARCHAR2(50) NOT NULL,
+    descripcion      VARCHAR2(250)
+);
+
+-- 15. TABLA ALIMENTACION
+CREATE TABLE alimentacion (
+    id_alimentacion   NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_alimentacion PRIMARY KEY,
+    id_lote           NUMBER NOT NULL,
+    fecha             DATE DEFAULT SYSDATE NOT NULL,
+    cantidad_alimento NUMBER(10,2) NOT NULL,
+    id_tipo_alimento  NUMBER NOT NULL,
+    id_trabajador     NUMBER NOT NULL,
+    CONSTRAINT fk_alim_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_alim_tipo FOREIGN KEY (id_tipo_alimento) REFERENCES tipo_alimento(id_tipo_alimento),
+    CONSTRAINT fk_alim_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 16. TABLA CAUSA_MORTALIDAD
+CREATE TABLE causa_mortalidad (
+    id_causa     NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_causa_mortalidad PRIMARY KEY,
+    nombre_causa VARCHAR2(50) NOT NULL,
+    descripcion  VARCHAR2(250)
+);
+
+-- 17. TABLA MORTALIDAD
+CREATE TABLE mortalidad (
+    id_mortalidad NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_mortalidad PRIMARY KEY,
+    id_lote       NUMBER NOT NULL,
+    fecha         DATE DEFAULT SYSDATE NOT NULL,
+    cantidad      NUMBER(8) NOT NULL,
+    id_causa      NUMBER NOT NULL,
+    observaciones VARCHAR2(500),
+    id_trabajador NUMBER NOT NULL,
+    CONSTRAINT fk_mort_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_mort_causa FOREIGN KEY (id_causa) REFERENCES causa_mortalidad(id_causa),
+    CONSTRAINT fk_mort_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 18. TABLA ENFERMEDAD
+CREATE TABLE enfermedad (
+    id_enfermedad NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_enfermedad PRIMARY KEY,
+    nombre        VARCHAR2(100) NOT NULL,
+    descripcion   VARCHAR2(250),
+    sintomas      VARCHAR2(500)
+);
+
+-- 19. TABLA REGISTRO_SANITARIO
+CREATE TABLE registro_sanitario (
+    id_registro    NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_reg_sanitario PRIMARY KEY,
+    id_lote        NUMBER NOT NULL,
+    fecha          DATE DEFAULT SYSDATE NOT NULL,
+    id_enfermedad  NUMBER NOT NULL,
+    diagnostico    VARCHAR2(500),
+    gravedad       VARCHAR2(20) CHECK (gravedad IN ('baja', 'media', 'alta', 'critica')),
+    observaciones  VARCHAR2(500),
+    id_veterinario NUMBER NOT NULL,
+    CONSTRAINT fk_rs_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_rs_enfermedad FOREIGN KEY (id_enfermedad) REFERENCES enfermedad(id_enfermedad),
+    CONSTRAINT fk_rs_veterinario FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario)
+);
+
+-- 20. TABLA PRODUCTO
+CREATE TABLE producto (
+    id_producto   NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_producto PRIMARY KEY,
+    nombre        VARCHAR2(100) NOT NULL,
+    tipo          VARCHAR2(30) CHECK (tipo IN ('alimento', 'medicamento', 'equipamiento')),
+    unidad_medida VARCHAR2(20),
+    precio        NUMBER(12,2),
+    stock         NUMBER(10,2) DEFAULT 0
+);
+
+-- 21. TABLA TRATAMIENTO
+CREATE TABLE tratamiento (
+    id_tratamiento NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_tratamiento PRIMARY KEY,
+    id_registro    NUMBER NOT NULL,
+    id_producto    NUMBER NOT NULL,
+    dosis          VARCHAR2(50),
+    fecha_inicio   DATE NOT NULL,
+    fecha_fin      DATE,
+    id_veterinario NUMBER NOT NULL,
+    estado         VARCHAR2(20) DEFAULT 'en curso',
+    CONSTRAINT fk_trat_registro FOREIGN KEY (id_registro) REFERENCES registro_sanitario(id_registro),
+    CONSTRAINT fk_trat_producto FOREIGN KEY (id_producto) REFERENCES producto(id_producto),
+    CONSTRAINT fk_trat_veterinario FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario)
+);
+
+-- 22. TABLA VETERINARIO_CENTRO
+CREATE TABLE veterinario_centro (
+    id_veterinario NUMBER NOT NULL,
+    id_centro      NUMBER NOT NULL,
+    fecha_inicio   DATE DEFAULT SYSDATE NOT NULL,
+    fecha_fin      DATE,
+    CONSTRAINT pk_vet_centro PRIMARY KEY (id_veterinario, id_centro, fecha_inicio),
+    CONSTRAINT fk_vc_veterinario FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario),
+    CONSTRAINT fk_vc_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro)
+);
+
+-- 23. TABLA EMBARCACION
+CREATE TABLE embarcacion (
+    id_embarcacion NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_embarcacion PRIMARY KEY,
+    nombre         VARCHAR2(100) NOT NULL,
+    matricula      VARCHAR2(50) NOT NULL CONSTRAINT uk_embarcacion_mat UNIQUE,
+    tipo           VARCHAR2(50),
+    capacidad      NUMBER(10,2),
+    estado         VARCHAR2(20) DEFAULT 'operativo',
+    id_centro      NUMBER,
+    CONSTRAINT fk_emb_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro)
+);
+
+-- 24. TABLA TRASLADO
+CREATE TABLE traslado (
+    id_traslado        NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_traslado PRIMARY KEY,
+    id_lote            NUMBER NOT NULL,
+    id_centro_origen   NUMBER NOT NULL,
+    id_centro_destino  NUMBER NOT NULL,
+    fecha_salida       DATE NOT NULL,
+    fecha_llegada      DATE,
+    cantidad_trasladada NUMBER(10) NOT NULL,
+    id_embarcacion     NUMBER NOT NULL,
+    id_trabajador      NUMBER NOT NULL,
+    estado             VARCHAR2(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'en tránsito', 'completado')),
+    CONSTRAINT fk_tras_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_tras_origen FOREIGN KEY (id_centro_origen) REFERENCES centro_cultivo(id_centro),
+    CONSTRAINT fk_tras_destino FOREIGN KEY (id_centro_destino) REFERENCES centro_cultivo(id_centro),
+    CONSTRAINT fk_tras_embarcacion FOREIGN KEY (id_embarcacion) REFERENCES embarcacion(id_embarcacion),
+    CONSTRAINT fk_tras_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 25. TABLA PRODUCCION / COSECHA
+CREATE TABLE produccion (
+    id_produccion  NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_produccion PRIMARY KEY,
+    id_lote        NUMBER NOT NULL,
+    fecha          DATE DEFAULT SYSDATE NOT NULL,
+    cantidad_peces NUMBER(10) NOT NULL,
+    peso_total_kg  NUMBER(12,2) NOT NULL,
+    destino        VARCHAR2(50) CHECK (destino IN ('venta', 'consumo interno', 'descarte')),
+    observaciones  VARCHAR2(500),
+    id_trabajador  NUMBER NOT NULL,
+    CONSTRAINT fk_prod_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_prod_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 26. TABLA COMPRA
+CREATE TABLE compra (
+    id_compra     NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_compra PRIMARY KEY,
+    id_proveedor  NUMBER NOT NULL,
+    id_centro     NUMBER NOT NULL,
+    fecha         DATE DEFAULT SYSDATE NOT NULL,
+    total         NUMBER(12,2) DEFAULT 0 NOT NULL,
+    estado        VARCHAR2(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'aprobada', 'recibida', 'cancelada')),
+    id_trabajador NUMBER NOT NULL,
+    CONSTRAINT fk_compra_proveedor FOREIGN KEY (id_proveedor) REFERENCES proveedor(id_proveedor),
+    CONSTRAINT fk_compra_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro),
+    CONSTRAINT fk_compra_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 27. TABLA DETALLE_COMPRA
+CREATE TABLE detalle_compra (
+    id_detalle     NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_detalle_compra PRIMARY KEY,
+    id_compra      NUMBER NOT NULL,
+    id_producto    NUMBER NOT NULL,
+    cantidad       NUMBER(10,2) NOT NULL,
+    precio_unitario NUMBER(12,2) NOT NULL,
+    CONSTRAINT fk_dc_compra FOREIGN KEY (id_compra) REFERENCES compra(id_compra) ON DELETE CASCADE,
+    CONSTRAINT fk_dc_producto FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+-- 28. TABLA RECEPCION
+CREATE TABLE recepcion (
+    id_recepcion    NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_recepcion PRIMARY KEY,
+    id_compra       NUMBER NOT NULL,
+    fecha_recepcion DATE DEFAULT SYSDATE NOT NULL,
+    id_trabajador   NUMBER NOT NULL,
+    estado          VARCHAR2(20) DEFAULT 'completa' CHECK (estado IN ('completa', 'parcial', 'rechazada')),
+    observaciones   VARCHAR2(500),
+    CONSTRAINT fk_rec_compra FOREIGN KEY (id_compra) REFERENCES compra(id_compra),
+    CONSTRAINT fk_rec_trabajador FOREIGN KEY (id_trabajador) REFERENCES trabajador(id_trabajador)
+);
+
+-- 29. TABLA TIPO_EQUIPAMIENTO
+CREATE TABLE tipo_equipamiento (
+    id_tipo_equipamiento NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_tipo_equip PRIMARY KEY,
+    nombre_tipo          VARCHAR2(50) NOT NULL
+);
+
+-- 30. TABLA EQUIPAMIENTO
+CREATE TABLE equipamiento (
+    id_equipamiento      NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_equipamiento PRIMARY KEY,
+    nombre               VARCHAR2(100) NOT NULL,
+    id_tipo_equipamiento NUMBER NOT NULL,
+    marca                VARCHAR2(50),
+    modelo               VARCHAR2(50),
+    estado               VARCHAR2(30) DEFAULT 'operativo',
+    fecha_adquisicion    DATE,
+    cantidad             NUMBER(6) DEFAULT 1,
+    id_centro            NUMBER NOT NULL,
+    CONSTRAINT fk_eq_tipo FOREIGN KEY (id_tipo_equipamiento) REFERENCES tipo_equipamiento(id_tipo_equipamiento),
+    CONSTRAINT fk_eq_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro)
+);
+
+-- 31. TABLA TAREA / ACTIVIDAD
+CREATE TABLE tarea (
+    id_tarea            NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_tarea PRIMARY KEY,
+    id_centro           NUMBER NOT NULL,
+    id_lote             NUMBER,
+    descripcion         VARCHAR2(500) NOT NULL,
+    id_trabajador_asig  NUMBER NOT NULL,
+    fecha_asignada      DATE DEFAULT SYSDATE NOT NULL,
+    fecha_limite        DATE,
+    estado              VARCHAR2(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'en progreso', 'completada')),
+    id_trabajador_reg   NUMBER NOT NULL,
+    CONSTRAINT fk_tarea_centro FOREIGN KEY (id_centro) REFERENCES centro_cultivo(id_centro),
+    CONSTRAINT fk_tarea_lote FOREIGN KEY (id_lote) REFERENCES lote(id_lote),
+    CONSTRAINT fk_tarea_asig FOREIGN KEY (id_trabajador_asig) REFERENCES trabajador(id_trabajador),
+    CONSTRAINT fk_tarea_reg FOREIGN KEY (id_trabajador_reg) REFERENCES trabajador(id_trabajador)
+);
