@@ -1,0 +1,79 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="6378C0E1-E584-01F8-A925-023BE27718AD" name="ROL_PERMISO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>F3D91344-C561-9602-EA8F-91701A55C736</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_ROL" id="0E57CD44-A910-A483-044A-16C6C644C995">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>F57991EC-82FE-7FB3-69FA-C03ED21B5B17</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="B48BCE7E-EEC1-70A7-8586-E0A5C5D0208D" referredColumn="50517974-EF4E-C20D-AE23-8DC75D2B5C40"/>
+</associations>
+</Column>
+<Column name="ID_PERMISO" id="27327795-DFA4-56B4-13EF-B50F66AE1DF5">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>30EB7E10-F590-E62D-823F-693D6D058E13</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="26595596-0544-1BCD-CA39-A8BDC46B7BCD" referredColumn="4444BEFE-7868-81F5-7648-B9C0E9232F3B"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="9952F16C-9A9F-C081-21EA-BB18D5043E29" name="PK_ROL_PERMISO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>DD36684D-BA5D-5A55-3B02-4E0571CB9751</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="0E57CD44-A910-A483-044A-16C6C644C995"/>
+<colUsage columnID="27327795-DFA4-56B4-13EF-B50F66AE1DF5"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="85CDB2F1-9A42-791C-7998-1CE11793F03C" name="FK_RP_PERMISO">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="27327795-DFA4-56B4-13EF-B50F66AE1DF5"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="CB690753-53FE-060C-1BB6-E0AC23BC278F" name="FK_RP_ROL">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="0E57CD44-A910-A483-044A-16C6C644C995"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="589EF26D-54E1-4212-BAF0-C4AB4ADEA737" containerWithKeyObject="7635B740-5FAA-F6E1-2FCE-4B78DB7D856C" localFKIndex="72834991-2293-2B42-A5AB-583C1615BEFC" name="FK_ALIM_TIPO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>CADC5C15-D7B5-2488-10A9-CBAADBA0FA5C</importedID>
+<referredTableLongName>TIPO_ALIMENTO</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>DD13D960-97E0-395A-E594-7A753FC6FA26</referredTableID>
+<keyObject>BD919904-5EBB-61E7-BA0B-35D69BF3639F</keyObject>
+<referredKeyID>BD919904-5EBB-61E7-BA0B-35D69BF3639F</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_TIPO_ALIMENTO</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

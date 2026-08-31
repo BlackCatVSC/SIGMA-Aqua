@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="2BC6AD70-F536-5B3F-0AED-198659EF9BFB" containerWithKeyObject="4C12B326-5F8E-7B06-E9DB-5B672B9FDA6C" localFKIndex="15A34128-7DF4-A216-6D21-41A51A7DD46D" name="FK_LOTE_CENTRO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>75412348-0CCF-9EA7-F344-9C96098ECB5A</importedID>
+<referredTableLongName>CENTRO_CULTIVO</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>89C4A49C-00A2-373E-B576-B71C986931B5</referredTableID>
+<keyObject>74215FC5-591D-0A79-9951-24A105C59ED4</keyObject>
+<referredKeyID>74215FC5-591D-0A79-9951-24A105C59ED4</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_CENTRO</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>
