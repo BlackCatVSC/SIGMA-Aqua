@@ -105,28 +105,35 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
     -- fila o actualiza los cinco parametros con su ultima lectura.
     -------------------------------------------------------------------------------
     PROCEDURE p_refrescar_ultimo(p_id_tanque NUMBER) IS
+        v_ph    ULTIMAS_MEDICIONES.VALOR_PH%TYPE;
+        v_oxig  ULTIMAS_MEDICIONES.VALOR_OXIGENO%TYPE;
+        v_temp  ULTIMAS_MEDICIONES.VALOR_TEMPERATURA%TYPE;
+        v_sal   ULTIMAS_MEDICIONES.VALOR_SALINIDAD%TYPE;
+        v_turb  ULTIMAS_MEDICIONES.VALOR_TURBIDEZ%TYPE;
     BEGIN
+        -- Se obtienen primero los valores en PL/SQL (las funciones privadas NO
+        -- pueden invocarse dentro de SQL). Luego se aplican con MERGE.
+        v_ph   := f_ultima_medicion(p_id_tanque, 'PH');
+        v_oxig := f_ultima_medicion(p_id_tanque, 'OXIGENO');
+        v_temp := f_ultima_medicion(p_id_tanque, 'TEMPERATURA');
+        v_sal  := f_ultima_medicion(p_id_tanque, 'SALINIDAD');
+        v_turb := f_ultima_medicion(p_id_tanque, 'TURBIDEZ');
+
         MERGE INTO ULTIMAS_MEDICIONES u
         USING (SELECT p_id_tanque AS id_tanque FROM DUAL) s
         ON (u.ID_TANQUE = s.id_tanque)
         WHEN MATCHED THEN UPDATE SET
-            VALOR_PH            = f_ultima_medicion(p_id_tanque, 'PH'),
-            VALOR_OXIGENO       = f_ultima_medicion(p_id_tanque, 'OXIGENO'),
-            VALOR_TEMPERATURA   = f_ultima_medicion(p_id_tanque, 'TEMPERATURA'),
-            VALOR_SALINIDAD     = f_ultima_medicion(p_id_tanque, 'SALINIDAD'),
-            VALOR_TURBIDEZ      = f_ultima_medicion(p_id_tanque, 'TURBIDEZ'),
+            VALOR_PH            = NVL(v_ph,   u.VALOR_PH),
+            VALOR_OXIGENO       = NVL(v_oxig, u.VALOR_OXIGENO),
+            VALOR_TEMPERATURA   = NVL(v_temp, u.VALOR_TEMPERATURA),
+            VALOR_SALINIDAD     = NVL(v_sal,  u.VALOR_SALINIDAD),
+            VALOR_TURBIDEZ      = NVL(v_turb, u.VALOR_TURBIDEZ),
             FECHA_ACTUALIZACION = SYSDATE
         WHEN NOT MATCHED THEN INSERT
             (ID_TANQUE, VALOR_PH, VALOR_OXIGENO, VALOR_TEMPERATURA,
              VALOR_SALINIDAD, VALOR_TURBIDEZ, FECHA_ACTUALIZACION)
         VALUES
-            (p_id_tanque,
-             f_ultima_medicion(p_id_tanque, 'PH'),
-             f_ultima_medicion(p_id_tanque, 'OXIGENO'),
-             f_ultima_medicion(p_id_tanque, 'TEMPERATURA'),
-             f_ultima_medicion(p_id_tanque, 'SALINIDAD'),
-             f_ultima_medicion(p_id_tanque, 'TURBIDEZ'),
-             SYSDATE);
+            (p_id_tanque, v_ph, v_oxig, v_temp, v_sal, v_turb, SYSDATE);
     END p_refrescar_ultimo;
 
     -- ============================================================================

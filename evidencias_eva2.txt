@@ -1,0 +1,65 @@
+=============================================================================
+EVIDENCIAS DEL PROCESO DE DESARROLLO (Eva2 - BDY1103)
+Proyecto: SIGMA-Aqua - Modulo de monitoreo de calidad de agua
+Objetos: PKG_MONITOREO_AGUA, tablas de monitoreo, triggers y vista
+=============================================================================
+
+Registro de errores, decisiones tecnicas y aprendizajes durante el
+desarrollo. Sirve de insumo para la seccion "Proceso de desarrollo
+asistido por IA" del informe y para las 4 evidencias solicitadas
+(decision tecnica, error/dificultad, prueba significativa y aprendizaje).
+
+------------------------------------------------------------------------------
+ERROR 1 - Funcion privada usada dentro de SQL (CORREGIDO)
+------------------------------------------------------------------------------
+* Que paso:
+  Al compilar el PACKAGE BODY PKG_MONITOREO_AGUA aparecia:
+      PLS-00231: function 'F_ULTIMA_MEDICION' may not be used in SQL
+      ORA-00904: invalid identifier
+      PL/SQL: SQL Statement ignored (en la linea del MERGE)
+
+* Causa:
+  La funcion privada f_ultima_medicion se invocaba DENTRO de la sentencia
+  MERGE (contexto SQL). Oracle no permite llamar funciones privadas de un
+  package desde SQL; solo pueden usarse desde PL/SQL. Las funciones que se
+  usan dentro de SQL deben estar declaradas en la especificacion (publicas).
+
+* Solucion adoptada:
+  Calcular primero los 5 valores en variables PL/SQL (v_ph, v_oxig, v_temp,
+  v_sal, v_turb) llamando a f_ultima_medicion desde PL/SQL, y luego usar
+  esas variables dentro del MERGE. Asi se mantiene la funcion privada y el
+  encapsulamiento.
+
+* Como se comprobo:
+  Se recompilo el package completo sin errores (Package Body compiled).
+
+* Aprendizaje:
+  Regla de Oracle: funcion privada (solo en el body) = no usable en SQL;
+  funcion publica (en el spec) = usable en SQL. Para resolverlo sin romper
+  el encapsulamiento, mover la llamada a PL/SQL.
+
+------------------------------------------------------------------------------
+ERROR 2 - Permiso insuficiente para crear la vista (CORREGIDO)
+------------------------------------------------------------------------------
+* Que paso:
+  Al ejecutar CREATE OR REPLACE VIEW V_ICA_CENTRO aparecia:
+      ORA-01031: insufficient privileges
+
+* Causa:
+  El usuario no tenia el privilegio del sistema CREATE VIEW.
+
+* Solucion adoptada:
+  Se otorgo el privilegio con: GRANT CREATE VIEW TO <usuario>;
+
+* Como se comprobo:
+  La vista V_ICA_CENTRO se creo correctamente y devuelve el ICA agregado
+  por centro (ICA_MIN, ICA_MAX, ICA_PROMEDIO).
+
+* Aprendizaje:
+  Crear tablas no implica poder crear vistas; son privilegios distintos.
+
+------------------------------------------------------------------------------
+OTROS PROBLEMAS / OBSERVACIONES (ir agregando segun surjan)
+------------------------------------------------------------------------------
+
+=============================================================================
