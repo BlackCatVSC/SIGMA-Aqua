@@ -1,0 +1,222 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="944D5CCF-D5E0-D06B-DCD1-5790C60F0272" name="TRASLADO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>F7B0599A-71B0-AFB9-C22D-321F86298C28</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_TRASLADO" id="76AEDF40-3F5D-2E1D-999C-6D89F64A329E">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>2ACB12CA-BC42-11E7-BE05-AE3BC1B20B2B</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="FECHA_SALIDA_TRAS" id="DC43E541-DBE0-0385-4B1B-7BE91FCFD4B5">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>129D402A-12F6-0199-73B7-37355454C786</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<domain>678EEA5D-9A8E-93DB-00C1-7C8C9BC0048A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="FECHA_LLEGADA_TRAS" id="68C521C2-874D-E7A4-B1EB-E08B6D05BB92">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>0F30607A-9EE8-E67D-D158-51379505B4B6</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<domain>678EEA5D-9A8E-93DB-00C1-7C8C9BC0048A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CANTIDAD_TRAS" id="7115C713-495B-5755-3FBF-8FEE0BDBC46C">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>C96956A4-39BB-CA56-41EB-68BAD2E4B5F4</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ESTADO_TRAS" id="9F0318AC-3637-1A73-5095-B140A5C2D554">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>89AF70D5-7F24-2D74-ED3C-9A4A10687EE1</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>1EACCF1D-2831-68C4-3E21-678225B6B6D6</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ID_LOTE" id="B8B9867F-A3E8-D273-535B-738FB338D44D">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>7776F11A-C96D-AB79-1F36-799C0449C26C</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="20346D81-5E12-2715-FE9A-137AE09BFD89" referredColumn="DD40EC61-B2CB-E756-71F2-DF710C45C209"/>
+</associations>
+</Column>
+<Column name="ID_CENTRO_ORIGEN" id="FC966CD1-F547-CD94-C7C8-DDD95F1764DA">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>B0F759D5-32BB-F7F9-A900-D7579592AE65</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="A5FE406A-AF60-5303-3EC9-1ED36B6E94E0" referredColumn="658B70BD-FB6E-76AA-FFFF-B40B70484977"/>
+</associations>
+</Column>
+<Column name="ID_CENTRO_DESTINO" id="E02C7615-2871-7150-F86E-9B653B5B8BFF">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>9F81804B-4334-5F49-5C1B-FB1006B404E7</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="712B110E-F078-B3BE-4EFA-DA60B913B8A2" referredColumn="658B70BD-FB6E-76AA-FFFF-B40B70484977"/>
+</associations>
+</Column>
+<Column name="ID_EMBARCACION" id="DDFFA2A4-489F-2DA9-0155-AE28CC475A9B">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>B0858092-1048-53BF-51FF-549B8AB1D2AB</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="9FB2C6BA-149F-1E8F-D0E7-28F70861C586" referredColumn="34994888-6C12-BFFF-0ED2-5B4AA6E387AF"/>
+</associations>
+</Column>
+<Column name="ID_TRABAJADOR" id="31D84139-A4B8-3151-DFB3-79495EE726FE">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>686F155B-E1C1-33EC-14C8-A6BED999D86E</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="2E8CE963-A627-59DD-00EA-32198A17A9F5" referredColumn="9004C0C3-6C8C-2AE1-B5F4-09A8594D09C5"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="CD187973-53E4-451B-4E70-3AF22B8BFBF1" name="TRASLADO_PK">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>5C14742C-425A-B0A0-A7AB-242DE50A47F0</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="76AEDF40-3F5D-2E1D-999C-6D89F64A329E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="F431A1F2-CF93-30A2-BCA6-A522AAD64892" name="FK_TRAS_DESTINO">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E02C7615-2871-7150-F86E-9B653B5B8BFF"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="57DB3844-7797-6FCE-64CB-DE1DBA6DCBFD" name="FK_TRAS_EMB">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="DDFFA2A4-489F-2DA9-0155-AE28CC475A9B"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="AB890252-6A4E-094A-B06E-FDF7B75AD1F0" name="FK_TRAS_LOTE">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="B8B9867F-A3E8-D273-535B-738FB338D44D"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="FF192419-35CE-76D9-1768-8E9AB1B9406E" name="FK_TRAS_ORIGEN">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="FC966CD1-F547-CD94-C7C8-DDD95F1764DA"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="EC95A5B0-3235-1607-69BB-7EA27A0FD3BF" name="FK_TRAS_TRAB">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="31D84139-A4B8-3151-DFB3-79495EE726FE"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,181 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="C8353F6A-77D9-8CA1-616D-E6425B9B48BE" name="TRABAJADOR">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>8D5BA2C1-5A7A-5543-E513-7211717A18DE</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_TRABAJADOR" id="9004C0C3-6C8C-2AE1-B5F4-09A8594D09C5">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>EFCF0F70-D485-222C-8D3E-437835FDC5EF</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="NOMBRE_TRAB" id="9C530E3D-F5EF-0C89-AE9C-BDFCD190805B">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>D6D36722-F324-0B82-4CBF-965B413F5A88</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>60DBC42F-CBE4-4EB2-9F35-7699234D5DF2</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="APELLIDO_TRAB" id="B7B86A8D-572E-1B60-06D5-F19D48D13DA3">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>85928F31-A962-1C5C-D956-7815E52A800E</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>60DBC42F-CBE4-4EB2-9F35-7699234D5DF2</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="RUT_TRAB" id="A8CBADEA-462A-26D6-B032-CF752167A901">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>FB513FF5-F166-C8CE-CCB0-2A0D1AC548BC</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>D872E908-21C1-C110-7829-EFA78E3F93FF</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CARGO_TRAB" id="D5BAC3F9-AB92-CA70-9AC2-0F617916542C">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>81B65378-908F-A52C-0552-496DB51F2831</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>60DBC42F-CBE4-4EB2-9F35-7699234D5DF2</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="TELEFONO_TRAB" id="D8494BA8-B781-D4F9-B22C-3E72451619AD">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>65541671-E76F-4F44-6EF7-5EB0FD978301</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>D872E908-21C1-C110-7829-EFA78E3F93FF</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="EMAIL_TRAB" id="6C8B4BCF-FBCB-8F62-6046-FABF1C41D9D0">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>9D230F1F-0B71-F243-D07F-527EB4D11F54</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>60DBC42F-CBE4-4EB2-9F35-7699234D5DF2</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ESTADO_TRAB" id="61BBF765-0C43-A5DE-B532-2480ADA9520E">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>E6AF9A42-5980-4CFC-50EE-AB3A5E0F66A4</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>B3F504CF-53F8-CE03-B8E7-CD39D3D93DA7</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="FECHA_CONTRATO_TRAB" id="BABB7608-755E-341B-0062-715A076D64B7">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>1D4DD786-89A7-763C-D4C1-F045913D2427</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<domain>678EEA5D-9A8E-93DB-00C1-7C8C9BC0048A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ID_CENTRO" id="564741B6-1F87-8E3A-CDBB-8466725BAE6C">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>7B493F53-3287-5E10-435E-9D8C3053095B</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="93180BE2-EAA4-29A9-B259-B912BBF37A4C" referredColumn="658B70BD-FB6E-76AA-FFFF-B40B70484977"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="DB217FDE-18B5-D7A7-A1DC-B02A09835CD8" name="TRABAJADOR_PK">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>71FF8386-1FC9-AD89-3C9C-E9C18295268D</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="9004C0C3-6C8C-2AE1-B5F4-09A8594D09C5"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="112C955A-EAE8-807A-9A47-55F25C857567" name="INDEX_1v3">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>052B05BB-9845-D246-C3AF-83F591248D9B</importedID>
+<indexState>Unique Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="A8CBADEA-462A-26D6-B032-CF752167A901"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="23743767-8A32-6413-CC77-E9ED144299C8" name="FK_TRABAJADOR_CENTRO">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="564741B6-1F87-8E3A-CDBB-8466725BAE6C"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

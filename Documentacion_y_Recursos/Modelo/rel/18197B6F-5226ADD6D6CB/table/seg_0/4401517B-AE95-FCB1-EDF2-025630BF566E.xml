@@ -1,0 +1,170 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="4401517B-AE95-FCB1-EDF2-025630BF566E" name="REGISTRO_SANITARIO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>FD3E60C8-2A22-C223-F06C-25F304010054</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_REGISTRO" id="E9BDF91B-26B3-DCE3-AED3-0D8C18658146">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>E469E740-5FEA-9246-8B2C-4D1C5FACA82D</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="FECHA_REG_SANIT" id="5C5F3B1F-2B21-75C7-F1F2-440BE1DCBAB6">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>8C9C4A63-268E-C471-D6AE-A15BF66A6955</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<domain>678EEA5D-9A8E-93DB-00C1-7C8C9BC0048A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="DIAGNOSTICO_REG_SANIT" id="E95DE626-E5A4-2A9D-D065-DA2A4C77C815">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>540AE1EB-892D-F9AF-8C4C-8EE3FF026B74</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>97CBE284-B574-EEFE-7854-CF740068B317</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="GRAVEDAD_REG_SANIT" id="8504412E-B020-708A-0B5F-5F922236FD1A">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>381F76CB-DA7B-FCEE-0CB5-5A250909722F</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>3610258F-04C7-F6A3-95E0-4F8512986F4A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="OBSERVACIONES_REG_SANIT" id="623CF6EA-9B00-025D-265B-20C30959491C">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>72351186-D010-1003-180D-D3E57153B747</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>97CBE284-B574-EEFE-7854-CF740068B317</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ID_LOTE" id="032F071E-C1DD-DE7B-0444-2BDE01F9BF78">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>85E0AE9B-342C-5DF9-9A2E-ABAC3C103B20</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="7F2B854F-20CC-560A-F0B7-F524E40077A7" referredColumn="DD40EC61-B2CB-E756-71F2-DF710C45C209"/>
+</associations>
+</Column>
+<Column name="ID_ENFERMEDAD" id="458CB7C1-5930-6EE7-B1D2-A32AF0CBA4D6">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>4FF30716-7EF0-6D72-AE5E-8060820F818E</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D794DDE9-760C-1353-4F43-A800ECA3C8F3" referredColumn="DEFD4E52-6BEA-A31A-2C6D-2BCFCF8CFEC1"/>
+</associations>
+</Column>
+<Column name="ID_VETERINARIO" id="D188928F-75DA-1888-FF3E-8464290E9587">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>CFB4CB64-240F-E8FB-B280-643E7AF05BC1</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="A867624E-809C-F726-D616-FB8D43AFAB66" referredColumn="DBDD0E37-3B03-4243-958B-8FB2B0C4D47E"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="096D7F3A-4E5E-7D23-651A-DE43D92CBAFF" name="REGISTRO_SANITARIO_PK">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>493FDDC8-DC3A-AE71-4C3C-675F15241F38</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E9BDF91B-26B3-DCE3-AED3-0D8C18658146"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="644D7E0D-2C04-850B-31B9-EDE4446F8727" name="FK_RS_ENFERMEDAD">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="458CB7C1-5930-6EE7-B1D2-A32AF0CBA4D6"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="CE3021E4-7F39-039B-F996-E9E9F4E5C382" name="FK_RS_LOTE">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="032F071E-C1DD-DE7B-0444-2BDE01F9BF78"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="FFE37AF4-6D9C-2FE6-74EF-B0E23EF2E910" name="FK_RS_VET">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D188928F-75DA-1888-FF3E-8464290E9587"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

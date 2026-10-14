@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="F88CC826-0EB6-EA39-C980-EB49CE46D0C4" containerWithKeyObject="DDDB6189-6D11-E800-EA76-DCFE7D5A0876" localFKIndex="F3D1FEC3-03E2-4FB1-6E00-0FE65B96C1AC" name="FK_MORT_LOTE">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>38911683-C6D9-E0A7-685B-3BB1BA86D43D</importedID>
+<referredTableLongName>LOTE</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>4C12B326-5F8E-7B06-E9DB-5B672B9FDA6C</referredTableID>
+<keyObject>15D7B8B3-982A-F868-B03D-8719BBBB15E7</keyObject>
+<referredKeyID>15D7B8B3-982A-F868-B03D-8719BBBB15E7</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_LOTE</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

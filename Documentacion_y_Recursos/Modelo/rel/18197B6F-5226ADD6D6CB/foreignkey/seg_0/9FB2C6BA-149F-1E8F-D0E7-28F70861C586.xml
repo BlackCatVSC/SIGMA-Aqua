@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="9FB2C6BA-149F-1E8F-D0E7-28F70861C586" containerWithKeyObject="944D5CCF-D5E0-D06B-DCD1-5790C60F0272" localFKIndex="57DB3844-7797-6FCE-64CB-DE1DBA6DCBFD" name="FK_TRAS_EMB">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>927C067D-708C-6328-3DCC-7F83B56995B3</importedID>
+<referredTableLongName>EMBARCACION</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>A02AA62F-275E-746B-3BF8-5D37A9CB9844</referredTableID>
+<keyObject>C88ABCDF-BF7B-61C8-331B-350C8D9ABCDE</keyObject>
+<referredKeyID>C88ABCDF-BF7B-61C8-331B-350C8D9ABCDE</referredKeyID>
+<mandatory>false</mandatory>
+<refColNames>ID_EMBARCACION</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

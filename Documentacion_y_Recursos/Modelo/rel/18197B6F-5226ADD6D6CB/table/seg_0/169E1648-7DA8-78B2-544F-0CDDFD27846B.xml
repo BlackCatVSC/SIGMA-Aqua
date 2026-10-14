@@ -1,0 +1,105 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="169E1648-7DA8-78B2-544F-0CDDFD27846B" name="VETERINARIO_CENTRO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>97ACA249-9ACE-5309-9993-1FA8150E0E8C</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_VETERINARIO" id="E1E6B44E-AF4F-8AD1-1554-840AE5B352E0">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>08347944-FE17-2AF4-D3C3-2413EC8583CC</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="A4D3CFB4-F8B4-E76F-896F-F9CFF6EBE6D3" referredColumn="DBDD0E37-3B03-4243-958B-8FB2B0C4D47E"/>
+</associations>
+</Column>
+<Column name="ID_CENTRO" id="129234E2-AE27-5C22-1F38-40434D2963AA">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>C706AD45-85BA-59B0-D090-C702C3ED149F</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>D1B84EC0-DFB5-A80E-C0D3-DDF2D9511545</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="74202939-152D-C20C-72DE-1639BA30FE77" referredColumn="658B70BD-FB6E-76AA-FFFF-B40B70484977"/>
+</associations>
+</Column>
+<Column name="FECHA_INICIO_VET_CENTRO" id="169DB80E-52A7-C21F-A38D-9A25859AC7FB">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>105B2B19-0701-1E7E-E166-04E67AA23814</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<domain>678EEA5D-9A8E-93DB-00C1-7C8C9BC0048A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="FECHA_FIN_VET_CENTRO" id="8156C642-4025-5EBA-DEE5-3E5C39CCD640">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>3F545799-6471-5E30-33FF-0FD02606A676</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<domain>678EEA5D-9A8E-93DB-00C1-7C8C9BC0048A</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="D4E020B4-8CE1-78B4-2E57-B12D7B51FE47" name="PK_VET_CENTRO">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>0937D8C2-7453-C04A-4C53-FA48E2907E0F</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E1E6B44E-AF4F-8AD1-1554-840AE5B352E0"/>
+<colUsage columnID="129234E2-AE27-5C22-1F38-40434D2963AA"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="3A6C6138-3C65-E011-8D43-2380E3087C90" name="FK_VC_CENTRO">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="129234E2-AE27-5C22-1F38-40434D2963AA"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="57D2EADD-D447-C8AC-4386-137913210EDE" name="FK_VC_VET">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E1E6B44E-AF4F-8AD1-1554-840AE5B352E0"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>
