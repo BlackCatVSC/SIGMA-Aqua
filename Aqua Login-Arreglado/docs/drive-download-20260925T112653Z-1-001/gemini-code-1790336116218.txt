@@ -1,0 +1,18 @@
+ID,MES,EV IN - EX,Reclutador/a,Nombre del Candidato/a,Origen del Candidato/a,Familia del Cargo,Nombre del Cargo,Ubicación del cargo,Unidad,Requiere Referencias,CECO,Adjuntar CV,Adjuntar Declaración,Aspectos a indagar,Referencias,Fecha de pedido,Fecha entrega,Fecha de envío informe,Tiempo,Categoría del evaluado
+1,marzo 26,externa,,,Externo,Profesional A,Líder Desarrollo Producción,Oficina Central,Corporativo,SI,A170010301,,,,,,,29/03/2026,2,Recomendado
+2,marzo 26,externa,,,Externo,Profesional A,Líder Desarrollo Producción,Oficina Central,Corporativo,SI,A170010301,,,,,,,29/03/2026,2,Recomendado con observaciones
+3,marzo 26,interna,,,Interno,Profesional B C,Analista de Sistemas,Planta magallanes,Industrial,,,,,,,,,29/03/2026,2,Recomendado
+4,marzo 26,interna,,,Interno,Profesional B C,Coordinador servicios generales,Planta Magallanes,Industrial,,,,,,,,,29/03/2026,2,Recomendado
+5,marzo 26,interna,,,Interno,Operario Calificado,Gruero,Planta Magallanes,Industrial,,,,,,,,,29/03/2026,2,Recomendado
+6,marzo 26,interna,,,Interno,Técnico B C,Asistente Bodega Planta,Pargua PA,Otros Producción,,,,,,,,,29/03/2026,2,Recomendado
+7,marzo 26,interna,,,Interno,Técnico B C,Operador Sala Control,Pargua PA,Otros Producción,,,,,,,,,29/03/2026,2,Recomendado
+8,marzo 26,interna,,,Interno,Técnico B C,Operador Sala Control,Pargua PA,Otros Producción,,,,,,,,,29/03/2026,2,Recomendado
+9,marzo 26,interna,,,Interno,Técnico A,Tecnico Mantencion Senior,AM Melinka,Producción AM,,,,,,,,,29/03/2026,2,Recomendado con observaciones
+10,marzo 26,interna,,,Interno,Técnico A,Tecnico Mantencion Senior,AM Melinka,Producción AM,,,,,,,,,29/03/2026,2,Recomendado
+11,marzo 26,interna,,,Interno,Técnico A,Tecnico Mantencion Senior,AM Melinka,Producción AM,,,,,,,,,29/03/2026,2,Recomendado
+12,marzo 26,interna,,,Interno,Supervisor B,Supervisor Planta,Planta magallanes,Industrial,,,,,,,,,29/03/2026,2,Recomendado
+13,marzo 26,interna,,,Interno,Técnico B C,Operador Sala Control,Pargua PA,Otros Producción,,,,,,,,,29/03/2026,2,Recomendado con observaciones
+14,marzo 26,interna,,,Interno,Jefatura,Jefe Area Piscicultura,Codinhue,Producción AD,,,,,,,,,29/03/2026,2,Recomendado
+15,marzo 26,interna,,,Interno,Técnico B C,Monitor Producción,Planta Calbuco,Industrial,,,,,,,,,29/03/2026,2,No recomendado
+16,marzo 26,interna,,,Interno,Jefatura,Jefe de SSO,Planta Cailin,Industrial,,,,,,,,,29/03/2026,2,Recomendado
+17,marzo 26,interna,,,Interno,Operario Calificado,Gruero,Planta Calbuco,Industrial,,,,,,,,,29/03/2026,2,Recomendado

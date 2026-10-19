@@ -1,0 +1,182 @@
+/* =========================================================
+   VISTA DE SOLICITUDES
+   ========================================================= */
+
+.person-cell.compact {
+  min-width: 190px;
+}
+
+.person-avatar.request-avatar {
+  background: #e9f3fb;
+  color: #1c72a0;
+}
+
+.request-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 35px;
+  height: 27px;
+  padding: 0 7px;
+  border-radius: 7px;
+  background: #eef4f7;
+  color: #547083;
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.request-role {
+  color: #354d61;
+  font-size: 0.71rem;
+}
+
+.responsible {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #40586a;
+  white-space: nowrap;
+}
+
+.responsible > span {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eaf2f6;
+  color: #27617b;
+  font-size: 0.56rem;
+  font-weight: 800;
+}
+
+.unassigned {
+  color: #a18139;
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.date-cell {
+  color: #687b8a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.request-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.request-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.request-status.pending {
+  color: #a77508;
+  background: #fff3cf;
+}
+
+.request-status.progress {
+  color: #087f99;
+  background: #dff7fb;
+}
+
+.request-status.done {
+  color: #19774f;
+  background: #ddf5e8;
+}
+
+.request-status.neutral {
+  color: #647381;
+  background: #eef1f3;
+}
+
+.row-open {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 7px;
+  background: #f0f4f6;
+  color: #668092;
+  font-size: 0.9rem;
+  transition: 0.16s ease;
+}
+
+.requests-table tbody tr {
+  cursor: pointer;
+}
+
+.requests-table tbody tr:hover .row-open {
+  background: #dff0f7;
+  color: #1f7194;
+  transform: translateX(2px);
+}
+
+/* Dark mode */
+
+:root[data-theme="dark"] .person-avatar.request-avatar {
+  background: #19384a;
+  color: #71c8e8;
+}
+
+:root[data-theme="dark"] .request-role,
+:root[data-theme="dark"] .responsible {
+  color: #c8d5dd;
+}
+
+:root[data-theme="dark"] .request-number {
+  background: #202d37;
+  color: #8ca5b4;
+}
+
+:root[data-theme="dark"] .responsible > span {
+  background: #203440;
+  color: #8bc6dc;
+}
+
+:root[data-theme="dark"] .unassigned {
+  color: #d8b55f;
+}
+
+:root[data-theme="dark"] .date-cell {
+  color: #9aabb7;
+}
+
+:root[data-theme="dark"] .request-status.pending {
+  color: #efc253;
+  background: #3b301c;
+}
+
+:root[data-theme="dark"] .request-status.progress {
+  color: #5dd0e6;
+  background: #173743;
+}
+
+:root[data-theme="dark"] .request-status.done {
+  color: #66d19a;
+  background: #193a2d;
+}
+
+:root[data-theme="dark"] .request-status.neutral {
+  color: #a6b4be;
+  background: #26323b;
+}
+
+:root[data-theme="dark"] .row-open {
+  background: #202d37;
+  color: #8fa5b2;
+}
+
+:root[data-theme="dark"] .requests-table tbody tr:hover .row-open {
+  background: #1c3948;
+  color: #71c8e8;
+}

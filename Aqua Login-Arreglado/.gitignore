@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+data/
+*.db
+*.log
+*.tsbuildinfo
+
+# Archivos grandes (>100MB) no aceptados por GitHub
+docs/*.zip
+docs/**/*.mp4

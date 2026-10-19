@@ -1,0 +1,130 @@
+/* =========================================================
+   VISTA DE CANDIDATOS
+   ========================================================= */
+
+.contact-cell strong,
+.contact-cell span {
+  display: block;
+}
+
+.contact-cell strong {
+  color: #3a5265;
+  font-size: 0.71rem;
+  font-weight: 650;
+}
+
+.contact-cell span {
+  margin-top: 3px;
+  color: #8493a0;
+  font-size: 0.64rem;
+}
+
+.role-chip,
+.family-chip {
+  display: inline-block;
+  max-width: 205px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.65rem;
+}
+
+.role-chip {
+  color: #355a70;
+  background: #edf5f8;
+}
+
+.family-chip {
+  color: #596878;
+  background: #f0f3f5;
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.actions-head {
+  text-align: right !important;
+}
+
+.row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 31px;
+  padding: 0 9px;
+  border: 1px solid;
+  border-radius: 7px;
+  background: transparent;
+  text-decoration: none;
+  font-size: 0.65rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: 0.16s ease;
+}
+
+.row-action.edit {
+  border-color: #bdcbd4;
+  color: #4f6677;
+}
+
+.row-action.edit:hover {
+  background: #edf4f7;
+  border-color: #91adbc;
+  color: #204c65;
+}
+
+.row-action.delete {
+  border-color: #e6a7b0;
+  color: #c44958;
+}
+
+.row-action.delete:hover {
+  background: #fff1f3;
+  border-color: #d97b88;
+}
+
+/* Dark mode */
+
+:root[data-theme="dark"] .contact-cell strong {
+  color: #c8d5dd;
+}
+
+:root[data-theme="dark"] .contact-cell span {
+  color: #81909d;
+}
+
+:root[data-theme="dark"] .role-chip {
+  color: #a9d3e4;
+  background: #1b303d;
+}
+
+:root[data-theme="dark"] .family-chip {
+  color: #b0bdc7;
+  background: #202c35;
+}
+
+:root[data-theme="dark"] .row-action.edit {
+  border-color: #40525f;
+  color: #aec0cc;
+}
+
+:root[data-theme="dark"] .row-action.edit:hover {
+  background: #1c303d;
+  border-color: #4e7184;
+  color: #d7edf5;
+}
+
+:root[data-theme="dark"] .row-action.delete {
+  border-color: #7e3e4a;
+  color: #ed7b8a;
+}
+
+:root[data-theme="dark"] .row-action.delete:hover {
+  background: #341f25;
+  border-color: #a8505d;
+}

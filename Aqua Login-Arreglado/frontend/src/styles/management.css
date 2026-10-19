@@ -1,0 +1,519 @@
+/* =========================================================
+   VISTAS DE CANDIDATOS Y SOLICITUDES - GESTIÓN COMPARTIDA
+   ========================================================= */
+
+.management-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.management-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.management-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #738596;
+  font-size: 0.67rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.management-header h1 {
+  margin: 0;
+  color: #18334b;
+  font-size: 1.85rem;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.management-header p {
+  margin: 6px 0 0;
+  color: #718191;
+  font-size: 0.82rem;
+}
+
+.management-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 9px;
+  background: #1672e9;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 750;
+  box-shadow: 0 7px 16px rgba(22, 114, 233, 0.18);
+  transition: 0.18s ease;
+}
+
+.management-primary-btn:hover {
+  color: #fff;
+  background: #0f65d4;
+  transform: translateY(-1px);
+}
+
+.management-primary-btn span {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.management-stats {
+  display: grid;
+  gap: 12px;
+}
+
+.management-stats.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.management-stats.four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.management-stat {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border: 1px solid #dfe7ed;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 5px 16px rgba(21, 51, 72, 0.035);
+}
+
+.management-stat-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.management-stat-icon.blue {
+  background: #e7f1ff;
+  color: #1672e9;
+}
+
+.management-stat-icon.cyan {
+  background: #e5f8fb;
+  color: #159db8;
+}
+
+.management-stat-icon.amber {
+  background: #fff4d8;
+  color: #c78b09;
+}
+
+.management-stat-icon.green {
+  background: #e5f7ed;
+  color: #21865b;
+}
+
+.management-stat small,
+.management-stat strong {
+  display: block;
+}
+
+.management-stat small {
+  color: #788998;
+  font-size: 0.66rem;
+}
+
+.management-stat strong {
+  margin-top: 2px;
+  color: #233b51;
+  font-size: 1.18rem;
+  font-weight: 800;
+}
+
+.management-panel {
+  overflow: hidden;
+  border: 1px solid #dfe7ed;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(20, 49, 70, 0.045);
+}
+
+.management-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-bottom: 1px solid #e4ebf0;
+  background: #fbfcfd;
+}
+
+.management-search {
+  height: 40px;
+  min-width: 280px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid #d4e0e7;
+  border-radius: 9px;
+  background: #fff;
+  color: #7c8d9b;
+}
+
+.management-search:focus-within {
+  border-color: #5ba5c6;
+  box-shadow: 0 0 0 3px rgba(53, 145, 185, 0.1);
+}
+
+.management-search > span {
+  font-size: 1.05rem;
+}
+
+.management-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #263e52;
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.management-search input::placeholder {
+  color: #91a0ac;
+}
+
+.management-search button {
+  border: 0;
+  background: transparent;
+  color: #8796a1;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.management-toolbar select {
+  height: 40px;
+  min-width: 180px;
+  padding: 0 11px;
+  border: 1px solid #d4e0e7;
+  border-radius: 9px;
+  background: #fff;
+  color: #354b5e;
+  font-size: 0.75rem;
+  outline: 0;
+}
+
+.management-result-count {
+  margin-left: auto;
+  color: #8493a0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.management-alert {
+  margin: 0 15px 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 0.75rem;
+}
+
+.management-alert.danger {
+  color: #a14343;
+  background: #fff4f4;
+  border: 1px solid #f0caca;
+}
+
+.management-table-wrap {
+  overflow-x: auto;
+}
+
+.management-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+}
+
+.management-table th {
+  padding: 12px 15px;
+  color: #788896;
+  background: #f7f9fa;
+  border-bottom: 1px solid #e1e8ed;
+  text-align: left;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.management-table td {
+  padding: 12px 15px;
+  color: #344a5d;
+  border-bottom: 1px solid #e7edf1;
+  vertical-align: middle;
+  font-size: 0.75rem;
+}
+
+.management-table tbody tr {
+  transition: 0.16s ease;
+}
+
+.management-table tbody tr:hover {
+  background: #f8fbfd;
+}
+
+.management-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.person-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.person-avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: #e7f1f7;
+  color: #236381;
+  font-size: 0.66rem;
+  font-weight: 850;
+}
+
+.person-cell strong,
+.person-cell small {
+  display: block;
+}
+
+.person-cell strong {
+  color: #263f54;
+  font-size: 0.77rem;
+  font-weight: 800;
+}
+
+.person-cell small {
+  margin-top: 3px;
+  color: #8997a2;
+  font-size: 0.62rem;
+}
+
+.management-empty {
+  height: 190px;
+  text-align: center !important;
+}
+
+.management-empty span,
+.management-empty strong,
+.management-empty small {
+  display: block;
+}
+
+.management-empty span {
+  width: 38px;
+  height: 38px;
+  margin: 0 auto 9px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #eef3f6;
+  color: #718797;
+  font-size: 1.05rem;
+}
+
+.management-empty strong {
+  color: #4a6172;
+  font-size: 0.78rem;
+}
+
+.management-empty small {
+  margin-top: 4px;
+  color: #8a99a4;
+  font-size: 0.67rem;
+}
+
+/* Dark mode: gestión */
+
+:root[data-theme="dark"] .management-header h1 {
+  color: #eef4f8;
+}
+
+:root[data-theme="dark"] .management-header p,
+:root[data-theme="dark"] .management-eyebrow {
+  color: #8495a4;
+}
+
+:root[data-theme="dark"] .management-stat,
+:root[data-theme="dark"] .management-panel {
+  background: #151f29;
+  border-color: #293945;
+  box-shadow: 0 9px 25px rgba(0, 0, 0, 0.17);
+}
+
+:root[data-theme="dark"] .management-stat small {
+  color: #8797a5;
+}
+
+:root[data-theme="dark"] .management-stat strong {
+  color: #e4edf2;
+}
+
+:root[data-theme="dark"] .management-stat-icon.blue {
+  background: #183653;
+  color: #62b7ec;
+}
+
+:root[data-theme="dark"] .management-stat-icon.cyan {
+  background: #163741;
+  color: #58c5da;
+}
+
+:root[data-theme="dark"] .management-stat-icon.amber {
+  background: #3b301d;
+  color: #f0be49;
+}
+
+:root[data-theme="dark"] .management-stat-icon.green {
+  background: #193a2e;
+  color: #5dc893;
+}
+
+:root[data-theme="dark"] .management-toolbar {
+  background: #111a23;
+  border-bottom-color: #293945;
+}
+
+:root[data-theme="dark"] .management-search,
+:root[data-theme="dark"] .management-toolbar select {
+  background: #111b24;
+  border-color: #344451;
+  color: #dce6ec;
+}
+
+:root[data-theme="dark"] .management-search input {
+  color: #e3ebf0;
+}
+
+:root[data-theme="dark"] .management-search input::placeholder {
+  color: #71818e;
+}
+
+:root[data-theme="dark"] .management-result-count {
+  color: #81919f;
+}
+
+:root[data-theme="dark"] .management-table th {
+  background: #18232d;
+  color: #8c9ca9;
+  border-bottom-color: #2c3a46;
+}
+
+:root[data-theme="dark"] .management-table td {
+  color: #cad6de;
+  border-bottom-color: #293945;
+}
+
+:root[data-theme="dark"] .management-table tbody tr:hover {
+  background: #18242e;
+}
+
+:root[data-theme="dark"] .person-avatar {
+  background: #1d3543;
+  color: #75c0df;
+}
+
+:root[data-theme="dark"] .person-cell strong {
+  color: #e0e8ed;
+}
+
+:root[data-theme="dark"] .person-cell small {
+  color: #81909d;
+}
+
+:root[data-theme="dark"] .management-empty span {
+  background: #202d37;
+  color: #8ca5b4;
+}
+
+:root[data-theme="dark"] .management-empty strong {
+  color: #cbd7de;
+}
+
+:root[data-theme="dark"] .management-empty small {
+  color: #7f8f9b;
+}
+
+/* Responsive */
+
+@media (max-width: 850px) {
+  .management-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .management-primary-btn {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .management-stats.three,
+  .management-stats.four {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .management-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .management-search {
+    min-width: 100%;
+  }
+
+  .management-toolbar select {
+    flex: 1;
+  }
+
+  .management-result-count {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .management-stats.three,
+  .management-stats.four {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .management-stat {
+    min-height: 70px;
+    padding: 10px;
+  }
+
+  .management-stat-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .management-header h1 {
+    font-size: 1.55rem;
+  }
+
+  .management-header p {
+    font-size: 0.75rem;
+  }
+}
