@@ -18,6 +18,6 @@ GRANT CREATE TRIGGER   TO SIGMA_TEST;  -- triggers
 --SQL/02_Triggers_y_Funciones/triggers_monitoreo.sql
 --SQL/02_Triggers_y_Funciones/PKG_SIGMA_AQUA.sql
 --SQL/03_Poblado_y_Consultas/test_monitoreo.sql: todas las líneas deberían salir [OK].
---BEGIN PKG_SIGMA_AQUA.sp_auditar_todos; END;: el resultado esperado es 1 centro que cumple y 3 con observaciones.
+BEGIN PKG_SIGMA_AQUA.sp_auditar_todos; END;
+--el resultado esperado es 1 centro que cumple y 3 con observaciones.
 
---scripts_plsql_sigma_aqua.sql este tiene un error al inicio la primera parte esta sin comentario por lo que al ejecutar el script se produce un error de sintaxis. Se debe comentar la primera línea para que el script funcione correctamente.
