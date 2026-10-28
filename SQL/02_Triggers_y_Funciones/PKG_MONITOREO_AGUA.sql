@@ -13,6 +13,7 @@ SET SERVEROUTPUT ON;
 --                      * Calculo del Indice de Calidad de Agua (ICA).
 --                    Distingue elementos PUBLICOS (especificacion) y PRIVADOS
 --                    (cuerpo).
+-- Version corregida: ver Correcciones_SIGMA-Aqua.txt
 -- ================================================================================
 
 -- ================================================================================
@@ -41,7 +42,8 @@ CREATE OR REPLACE PACKAGE PKG_MONITOREO_AGUA AS
         p_codigo_error     OUT NUMBER
     );
 
-    -- SIN parametros: procesa todos los centros con lecturas pendientes.
+    -- SIN parametros: procesa todas las lecturas pendientes (todos los centros
+    -- y todas las fechas).
     PROCEDURE sp_procesar_todo;
 
     -- ----------------------------------------------------------------------------
@@ -100,6 +102,37 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
     END f_ultima_medicion;
 
     -------------------------------------------------------------------------------
+    -- (PRIVADA) Indica si un valor esta fuera del umbral configurado en la tabla
+    -- UMBRAL para un tipo de sensor. Usa el umbral del centro si existe; si no,
+    -- el general. Es la MISMA regla que usa el trigger trg_evaluar_lectura_sensor,
+    -- asi alertas e ICA siempre coinciden.
+    -- Retorna FALSE si no hay valor o no hay umbral configurado.
+    -------------------------------------------------------------------------------
+    FUNCTION f_fuera_rango(p_valor NUMBER, p_tipo VARCHAR2, p_id_centro NUMBER) RETURN BOOLEAN IS
+        v_min UMBRAL.VALOR_MIN%TYPE;
+        v_max UMBRAL.VALOR_MAX%TYPE;
+    BEGIN
+        IF p_valor IS NULL THEN
+            RETURN FALSE;
+        END IF;
+
+        SELECT u.VALOR_MIN, u.VALOR_MAX
+          INTO v_min, v_max
+          FROM UMBRAL u
+          JOIN TIPO_SENSOR ts ON u.ID_TIPO_SENSOR = ts.ID_TIPO_SENSOR
+         WHERE UPPER(ts.NOMBRE_TIPO_SENSOR) = UPPER(p_tipo)
+           AND (u.ID_CENTRO IS NULL OR u.ID_CENTRO = p_id_centro)
+         ORDER BY CASE WHEN u.ID_CENTRO = p_id_centro THEN 1 ELSE 0 END DESC
+         FETCH FIRST 1 ROW ONLY;
+
+        RETURN (v_min IS NOT NULL AND p_valor < v_min)
+            OR (v_max IS NOT NULL AND p_valor > v_max);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+    END f_fuera_rango;
+
+    -------------------------------------------------------------------------------
     -- (PRIVADA) Refresca la tabla ULTIMAS_MEDICIONES de un tanque a partir del
     -- historico. Se implementa con MERGE (UPSERT): inserta si el tanque no tiene
     -- fila o actualiza los cinco parametros con su ultima lectura.
@@ -142,10 +175,14 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
 
     -------------------------------------------------------------------------------
     -- (PUBLICA, con parametros) Carga masiva de lecturas desde staging al historico
-    --   1) INSERT ... SELECT desde MEDICIONES_STAGING
-    --   2) Refresca ULTIMAS_MEDICIONES de los tanques afectados
-    --   3) Purgado (DELETE) del buffer ya procesado
-    --   4) Devuelve total procesado y codigo de error (0 = OK)
+    --   1) INSERT ... SELECT desde MEDICIONES_STAGING (el trigger de fila genera
+    --      las alertas de las lecturas fuera de rango)
+    --   2) Marca como ALERTA las mediciones que generaron alerta
+    --   3) Refresca ULTIMAS_MEDICIONES de los tanques afectados
+    --   4) Purgado (DELETE) del buffer procesado, con el MISMO filtro del paso 1
+    --   5) Devuelve total procesado y codigo de error (0 = OK)
+    -- Si algo falla, se deshace TODO lo hecho por este procedimiento (SAVEPOINT),
+    -- asi nunca quedan lecturas duplicadas entre staging e historico.
     -------------------------------------------------------------------------------
     PROCEDURE sp_procesar_lecturas_masivas(
         p_id_centro        IN  NUMBER,
@@ -155,6 +192,8 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
     ) IS
         v_total NUMBER := 0;
     BEGIN
+        SAVEPOINT sp_ini_proceso;
+
         -- 1) Carga masiva (bulk) desde staging a historico
         INSERT INTO HISTORIAL_MEDICIONES (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
         SELECT seq_medicion.NEXTVAL, st.ID_SENSOR, st.VALOR, st.FECHA_HORA, gc_estado_normal
@@ -165,7 +204,13 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
 
         v_total := SQL%ROWCOUNT;
 
-        -- 2) Refresca el ultimo estado conocido de los tanques afectados
+        -- 2) Las mediciones que generaron alerta quedan con estado ALERTA
+        UPDATE HISTORIAL_MEDICIONES h
+           SET h.ESTADO_MEDICION = gc_estado_alerta
+         WHERE h.ESTADO_MEDICION = gc_estado_normal
+           AND EXISTS (SELECT 1 FROM ALERTA a WHERE a.ID_MEDICION = h.ID_MEDICION);
+
+        -- 3) Refresca el ultimo estado conocido de los tanques afectados
         FOR r_tanque IN (
             SELECT DISTINCT s.ID_TANQUE
               FROM MEDICIONES_STAGING st
@@ -177,78 +222,69 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
             p_refrescar_ultimo(r_tanque.ID_TANQUE);
         END LOOP;
 
-        -- 3) Purgado del buffer ya procesado
+        -- 4) Purgado del buffer: mismo filtro que el INSERT del paso 1
         DELETE FROM MEDICIONES_STAGING
          WHERE ID_CENTRO = p_id_centro
-           AND TRUNC(FECHA_HORA) = TRUNC(p_fecha_proceso);
+           AND TRUNC(FECHA_HORA) = TRUNC(p_fecha_proceso)
+           AND NVL(ESTADO_PROCESO, gc_estado_pendiente) <> gc_estado_procesado;
 
         p_total_procesados := v_total;
         p_codigo_error     := 0;
 
     EXCEPTION
         WHEN OTHERS THEN
+            ROLLBACK TO sp_ini_proceso;   -- deshace todo lo hecho en esta llamada
             p_total_procesados := 0;
             p_codigo_error     := SQLCODE;
     END sp_procesar_lecturas_masivas;
 
     -------------------------------------------------------------------------------
-    -- (PUBLICA, sin parametros) Procesa todos los centros con lecturas pendientes.
-    -- Cada centro se procesa de forma aislada (un error no detiene el resto).
+    -- (PUBLICA, sin parametros) Procesa TODAS las lecturas pendientes: recorre
+    -- cada combinacion centro + fecha, no solo la fecha de hoy.
     -------------------------------------------------------------------------------
     PROCEDURE sp_procesar_todo IS
         v_total NUMBER;
         v_cod   NUMBER;
     BEGIN
         p_log('=== SIGMA-AQUA: PROCESAMIENTO MASIVO DE LECTURAS ===');
-        FOR r_centro IN (
-            SELECT DISTINCT ID_CENTRO
+        FOR r IN (
+            SELECT DISTINCT ID_CENTRO, TRUNC(FECHA_HORA) AS FECHA
               FROM MEDICIONES_STAGING
              WHERE NVL(ESTADO_PROCESO, gc_estado_pendiente) <> gc_estado_procesado
-             ORDER BY ID_CENTRO
+             ORDER BY ID_CENTRO, FECHA
         ) LOOP
-            BEGIN
-                sp_procesar_lecturas_masivas(r_centro.ID_CENTRO, SYSDATE, v_total, v_cod);
-                p_log('    Centro #' || r_centro.ID_CENTRO || ' -> procesados: ' ||
-                      v_total || ' | codigo error: ' || v_cod);
-            EXCEPTION
-                WHEN OTHERS THEN
-                    p_log('    >>> No fue posible procesar el centro #' ||
-                          r_centro.ID_CENTRO || ': ' || SQLERRM);
-            END;
+            sp_procesar_lecturas_masivas(r.ID_CENTRO, r.FECHA, v_total, v_cod);
+            p_log('    Centro #' || r.ID_CENTRO || ' | Fecha ' || TO_CHAR(r.FECHA, 'DD-MM-YYYY') ||
+                  ' -> procesados: ' || v_total || ' | codigo error: ' || v_cod);
         END LOOP;
         p_log('=== FIN DEL PROCESAMIENTO ===');
     END sp_procesar_todo;
 
     -------------------------------------------------------------------------------
     -- (PUBLICA, con parametro) Indice de Calidad de Agua (0-100) de un tanque.
-    -- Parte de 100 y descuenta penalizaciones por parametros fuera de rango:
-    --   * pH fuera de [6.5, 8.5] -> -25
-    --   * Oxigeno disuelto < 5.0  -> -40
-    --   * Temperatura fuera de [8, 16] -> -20
-    -- Nunca retorna un valor negativo.
+    -- Parte de 100 y descuenta si un parametro esta fuera del umbral configurado
+    -- en la tabla UMBRAL (misma regla que el trigger de alertas):
+    --   * pH fuera de rango          -> -25
+    --   * Oxigeno fuera de rango     -> -40
+    --   * Temperatura fuera de rango -> -20
+    -- Nunca retorna un valor negativo. NULL si el tanque no tiene mediciones.
     -------------------------------------------------------------------------------
     FUNCTION fn_calcular_ica(p_id_tanque NUMBER) RETURN NUMBER IS
-        v_ph    ULTIMAS_MEDICIONES.VALOR_PH%TYPE;
-        v_oxig  ULTIMAS_MEDICIONES.VALOR_OXIGENO%TYPE;
-        v_temp  ULTIMAS_MEDICIONES.VALOR_TEMPERATURA%TYPE;
-        v_ica   NUMBER := 100;
+        v_ph     ULTIMAS_MEDICIONES.VALOR_PH%TYPE;
+        v_oxig   ULTIMAS_MEDICIONES.VALOR_OXIGENO%TYPE;
+        v_temp   ULTIMAS_MEDICIONES.VALOR_TEMPERATURA%TYPE;
+        v_centro TANQUE.ID_CENTRO%TYPE;
+        v_ica    NUMBER := 100;
     BEGIN
-        SELECT VALOR_PH, VALOR_OXIGENO, VALOR_TEMPERATURA
-          INTO v_ph, v_oxig, v_temp
-          FROM ULTIMAS_MEDICIONES
-         WHERE ID_TANQUE = p_id_tanque;
+        SELECT u.VALOR_PH, u.VALOR_OXIGENO, u.VALOR_TEMPERATURA, t.ID_CENTRO
+          INTO v_ph, v_oxig, v_temp, v_centro
+          FROM ULTIMAS_MEDICIONES u
+          JOIN TANQUE t ON u.ID_TANQUE = t.ID_TANQUE
+         WHERE u.ID_TANQUE = p_id_tanque;
 
-        IF v_ph IS NOT NULL AND (v_ph < 6.5 OR v_ph > 8.5) THEN
-            v_ica := v_ica - 25;
-        END IF;
-
-        IF v_oxig IS NOT NULL AND v_oxig < 5.0 THEN
-            v_ica := v_ica - 40;
-        END IF;
-
-        IF v_temp IS NOT NULL AND (v_temp < 8 OR v_temp > 16) THEN
-            v_ica := v_ica - 20;
-        END IF;
+        IF f_fuera_rango(v_ph,   'PH',          v_centro) THEN v_ica := v_ica - 25; END IF;
+        IF f_fuera_rango(v_oxig, 'OXIGENO',     v_centro) THEN v_ica := v_ica - 40; END IF;
+        IF f_fuera_rango(v_temp, 'TEMPERATURA', v_centro) THEN v_ica := v_ica - 20; END IF;
 
         RETURN GREATEST(v_ica, 0);
     EXCEPTION
@@ -272,7 +308,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
     -------------------------------------------------------------------------------
     -- (PUBLICA, con parametros) Promedio de la ultima lectura de cada sensor de un
     -- tipo dentro de un centro. Usa ROW_NUMBER para quedarse con la lectura mas
-    -- reciente de cada sensor y luego promedia.
+    -- reciente de cada sensor y luego promedia. NULL si no hay lecturas.
     -------------------------------------------------------------------------------
     FUNCTION fn_promedio_sensor(p_id_centro NUMBER, p_id_tipo_sensor NUMBER) RETURN NUMBER IS
         v_prom NUMBER;
@@ -289,9 +325,6 @@ CREATE OR REPLACE PACKAGE BODY PKG_MONITOREO_AGUA AS
                    AND s.ID_TIPO_SENSOR = p_id_tipo_sensor)
          WHERE rn = 1;
         RETURN v_prom;
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            RETURN NULL;
     END fn_promedio_sensor;
 
 END PKG_MONITOREO_AGUA;
@@ -299,18 +332,22 @@ END PKG_MONITOREO_AGUA;
 
 -- ================================================================================
 -- 3. VISTA: ICA AGREGADO POR CENTRO DE CULTIVO (depende del package)
+--    El ICA se calcula UNA vez por tanque (subconsulta) y luego se agrega.
 -- ================================================================================
 CREATE OR REPLACE VIEW V_ICA_CENTRO AS
-SELECT c.ID_CENTRO,
-       c.NOMBRE_CENTRO,
-       COUNT(t.ID_TANQUE)                                                  AS TOTAL_TANQUES,
-       MIN(PKG_MONITOREO_AGUA.fn_calcular_ica(t.ID_TANQUE))               AS ICA_MIN,
-       MAX(PKG_MONITOREO_AGUA.fn_calcular_ica(t.ID_TANQUE))               AS ICA_MAX,
-       ROUND(AVG(PKG_MONITOREO_AGUA.fn_calcular_ica(t.ID_TANQUE)), 2)     AS ICA_PROMEDIO
-  FROM CENTRO_CULTIVO c
-  LEFT JOIN TANQUE t ON t.ID_CENTRO = c.ID_CENTRO
- GROUP BY c.ID_CENTRO, c.NOMBRE_CENTRO;
-/
+SELECT ID_CENTRO,
+       NOMBRE_CENTRO,
+       COUNT(ID_TANQUE)     AS TOTAL_TANQUES,
+       MIN(ICA)             AS ICA_MIN,
+       MAX(ICA)             AS ICA_MAX,
+       ROUND(AVG(ICA), 2)   AS ICA_PROMEDIO
+  FROM (SELECT c.ID_CENTRO,
+               c.NOMBRE_CENTRO,
+               t.ID_TANQUE,
+               PKG_MONITOREO_AGUA.fn_calcular_ica(t.ID_TANQUE) AS ICA
+          FROM CENTRO_CULTIVO c
+          LEFT JOIN TANQUE t ON t.ID_CENTRO = c.ID_CENTRO)
+ GROUP BY ID_CENTRO, NOMBRE_CENTRO;
 
 -- ================================================================================
 -- 4. EJEMPLOS DE USO (descomentar para probar)
@@ -325,7 +362,7 @@ SELECT c.ID_CENTRO,
 --    END;
 --    /
 --
--- b) Procesamiento masivo sin parametros (todos los centros):
+-- b) Procesamiento masivo sin parametros (todos los centros y fechas):
 --    BEGIN PKG_MONITOREO_AGUA.sp_procesar_todo; END;
 --    /
 --

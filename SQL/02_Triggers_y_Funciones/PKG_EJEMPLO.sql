@@ -4,7 +4,9 @@ SET SERVEROUTPUT ON;
 -- PACKAGE DE EJEMPLO PARA ESTUDIO (USANDO EL ESQUEMA SIGMA-AQUA)
 -- ================================================================================
 -- Tablas usadas: ESPECIE, LOTE, CENTRO_CULTIVO (del archivo DataModeler.sql).
--- Misma idea que PKG_EJEMPLO pero consultando datos reales de la base de datos.
+-- Package minimo para estudiar la diferencia entre parte PUBLICA y PRIVADA,
+-- consultando datos reales de la base de datos.
+-- NOTA: es material de estudio, no forma parte de la solucion entregada.
 -- ================================================================================
 
 -- ================================================================================
@@ -15,14 +17,12 @@ CREATE OR REPLACE PACKAGE PKG_EJEMPLO AS
     -- CONSTANTE publica
     gc_estado_activo CONSTANT VARCHAR2(10) := 'ACTIVO';
 
-    -- VARIABLE GLOBAL (conserva su valor entre llamadas)
-    g_lotes_procesados NUMBER := 0;
-
     -- FUNCIONES (devuelven valor, usables en SQL)
     FUNCTION fn_nombre_especie(p_id_lote NUMBER) RETURN VARCHAR2;
     FUNCTION fn_nombre_centro(p_id_centro NUMBER) RETURN VARCHAR2;
     FUNCTION fn_cantidad_lotes(p_id_centro NUMBER) RETURN NUMBER;
-    FUNCTION fn_total_especies RETURN NUMBER;  -- sin parametros
+    FUNCTION fn_total_especies RETURN NUMBER;          -- sin parametros
+    FUNCTION fn_centros_mostrados RETURN NUMBER;       -- lee el contador privado
 
     -- PROCEDIMIENTOS (no devuelven valor)
     PROCEDURE sp_mostrar_centro(p_id_centro NUMBER);
@@ -39,9 +39,13 @@ CREATE OR REPLACE PACKAGE BODY PKG_EJEMPLO AS
     -- ============================================================================
     -- SECCION PRIVADA: solo visible DENTRO del package
     -- ============================================================================
+    -- VARIABLE GLOBAL PRIVADA (conserva su valor durante la sesion). Al estar en
+    -- el cuerpo, nadie fuera del package puede modificarla directamente.
+    g_centros_mostrados NUMBER := 0;
+
     PROCEDURE p_incrementar IS
     BEGIN
-        g_lotes_procesados := g_lotes_procesados + 1;
+        g_centros_mostrados := g_centros_mostrados + 1;
     END p_incrementar;
 
     -- ============================================================================
@@ -94,6 +98,11 @@ CREATE OR REPLACE PACKAGE BODY PKG_EJEMPLO AS
         RETURN v_total;
     END fn_total_especies;
 
+    FUNCTION fn_centros_mostrados RETURN NUMBER IS
+    BEGIN
+        RETURN g_centros_mostrados;
+    END fn_centros_mostrados;
+
     PROCEDURE sp_mostrar_centro(p_id_centro NUMBER) IS
     BEGIN
         p_incrementar;  -- la publica usa la privada
@@ -103,7 +112,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_EJEMPLO AS
 
     PROCEDURE sp_reset_contador IS
     BEGIN
-        g_lotes_procesados := 0;
+        g_centros_mostrados := 0;
     END sp_reset_contador;
 
 END PKG_EJEMPLO;
@@ -122,12 +131,13 @@ END PKG_EJEMPLO;
 -- b) Procedimiento (muestra centro y sus lotes):
 --    BEGIN
 --        PKG_EJEMPLO.sp_mostrar_centro(1);
---        DBMS_OUTPUT.PUT_LINE('Lotes procesados: ' || PKG_EJEMPLO.g_lotes_procesados);
+--        DBMS_OUTPUT.PUT_LINE('Centros mostrados: ' || PKG_EJEMPLO.fn_centros_mostrados);
 --    END;
 --    /
 
 -- c) Lo PRIVADO no es accesible desde fuera (da error):
 --    BEGIN
---        PKG_EJEMPLO.p_incrementar;  -- ERROR: es privado
+--        PKG_EJEMPLO.p_incrementar;               -- ERROR: es privado
+--        PKG_EJEMPLO.g_centros_mostrados := 99;   -- ERROR: es privada
 --    END;
 --    /

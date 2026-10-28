@@ -1,0 +1,149 @@
+=====================================================================
+ SIGMA-Aqua - ERRORES ENCONTRADOS Y SUS CORRECCIONES
+ Triggers y Packages (BDY1103)
+=====================================================================
+
+Archivos corregidos:
+  - PKG_SIGMA_AQUA.sql
+  - PKG_MONITOREO_AGUA.sql
+  - triggers_monitoreo.sql
+  - PKG_EJEMPLO.sql
+  - scripts_plsql_sigma_aqua.sql (correccion hecha por el equipo, ver 15)
+
+---------------------------------------------------------------------
+ A) ERRORES GRAVES
+---------------------------------------------------------------------
+
+1) PKG_SIGMA_AQUA NO COMPILABA
+   Archivo : PKG_SIGMA_AQUA.sql
+   Error   : fn_densidad_centro y fn_biomasa_total_empresa usaban la
+             funcion PRIVADA f_peso_promedio dentro de un SELECT.
+             Oracle no permite usar funciones privadas dentro de SQL
+             (error PLS-00231).
+   Arreglo : Ahora se recorren los lotes con un FOR y se suma la
+             biomasa en PL/SQL usando fn_biomasa_lote. La funcion
+             f_peso_promedio sigue siendo privada.
+
+2) EL PROCESO DE LECTURAS PODIA DUPLICAR DATOS
+   Archivo : PKG_MONITOREO_AGUA.sql (sp_procesar_lecturas_masivas)
+   Error   : Si algo fallaba a mitad de camino, las lecturas ya
+             copiadas al historial no se deshacian, pero seguian en
+             staging. La siguiente corrida las copiaba otra vez
+             (lecturas y alertas duplicadas).
+   Arreglo : Se agrego SAVEPOINT al inicio y ROLLBACK TO SAVEPOINT en
+             el EXCEPTION. Si falla, se deshace todo lo de esa llamada.
+
+3) SOLO SE PROCESABAN LAS LECTURAS DE HOY
+   Archivo : PKG_MONITOREO_AGUA.sql (sp_procesar_todo)
+   Error   : Siempre llamaba al proceso con la fecha de hoy (SYSDATE).
+             Las lecturas pendientes de dias anteriores nunca se
+             procesaban.
+   Arreglo : Ahora recorre cada combinacion CENTRO + FECHA que tenga
+             lecturas pendientes.
+
+4) LA AUDITORIA PODIA DECIR "CUMPLE" SIN HABER CALCULADO
+   Archivo : PKG_SIGMA_AQUA.sql
+   Error   : Si un lote tenia CANTIDAD_ACTUAL_LOTE en NULL, o el ultimo
+             muestreo no tenia peso, la biomasa daba NULL. Comparar
+             NULL > capacidad nunca es verdadero, asi que el centro
+             aparecia como que cumplia la normativa.
+   Arreglo : - NVL(CANTIDAD_ACTUAL_LOTE, 0) en fn_biomasa_lote.
+             - f_peso_promedio ignora muestreos sin peso
+               (PESO_PROMEDIO_MUES IS NOT NULL).
+             - NVL al sumar la biomasa de cada lote en sp_auditar_centro.
+
+---------------------------------------------------------------------
+ B) ERRORES DE DISENO / COHERENCIA
+---------------------------------------------------------------------
+
+5) EL ICA Y LAS ALERTAS USABAN LIMITES DISTINTOS
+   Archivo : PKG_MONITOREO_AGUA.sql (fn_calcular_ica)
+   Error   : El trigger leia los limites desde la tabla UMBRAL, pero el
+             ICA los tenia escritos a mano en el codigo. Si alguien
+             cambiaba un umbral, alerta e ICA dejaban de coincidir.
+   Arreglo : Nueva funcion privada f_fuera_rango que lee la tabla
+             UMBRAL (igual que el trigger). El ICA ahora la usa.
+             Las penalizaciones (-25, -40, -20) se mantienen.
+
+6) LAS EXCEPCIONES PUBLICAS NUNCA LLEGABAN AL QUE LLAMA
+   Archivo : PKG_SIGMA_AQUA.sql (sp_auditar_centro)
+   Error   : e_exceso_biomasa y e_zona_restringida se declaran
+             publicas, pero el procedimiento las atrapaba y solo
+             imprimia un mensaje. Otro programa no podia reaccionar.
+   Arreglo : Despues de imprimir el mensaje se hace RAISE (se vuelve a
+             lanzar la excepcion). sp_auditar_todos ahora cuenta
+             cuantos centros cumplen y cuantos tienen observaciones.
+
+7) MEDICIONES FUERA DE RANGO QUEDABAN COMO "NORMAL"
+   Archivo : PKG_MONITOREO_AGUA.sql
+   Error   : Todas las mediciones se guardaban como NORMAL, aunque
+             generaran alerta. La constante gc_estado_alerta no se
+             usaba.
+   Arreglo : Despues del INSERT, un UPDATE marca como ALERTA las
+             mediciones que tienen una alerta asociada.
+
+8) EL BORRADO DE STAGING USABA OTRO FILTRO
+   Archivo : PKG_MONITOREO_AGUA.sql
+   Error   : El DELETE no filtraba por ESTADO_PROCESO, a diferencia del
+             INSERT. Podia borrar filas que no se habian copiado.
+   Arreglo : El DELETE usa exactamente el mismo filtro que el INSERT.
+
+9) LA VENTANA DE MANTENIMIENTO USABA LA HORA DEL SERVIDOR
+   Archivo : triggers_monitoreo.sql (trg_ventana_mantenimiento)
+   Error   : SYSDATE da la hora del servidor. Si el servidor esta en
+             otra zona horaria, el bloqueo ocurre a otra hora.
+   Arreglo : Se usa SYSTIMESTAMP AT TIME ZONE 'America/Santiago'.
+
+---------------------------------------------------------------------
+ C) DETALLES MENORES
+---------------------------------------------------------------------
+
+10) Trigger de fila: se usa RETURNING ID_ALERTA INTO en vez de
+    seq_alerta.CURRVAL, y el mensaje ahora dice el nombre del tanque.
+    Tambien se controla si VALOR_MIN o VALOR_MAX vienen en NULL.
+
+11) Vista V_ICA_CENTRO: calculaba el ICA 3 veces por tanque. Ahora lo
+    calcula 1 vez (subconsulta). Se quito la "/" sobrante que volvia a
+    ejecutar el CREATE VIEW.
+
+12) fn_promedio_sensor: se quito el EXCEPTION NO_DATA_FOUND, que nunca
+    ocurre porque AVG siempre devuelve una fila.
+
+13) sp_auditar_centro: el formato de densidad '990.00' mostraba ####
+    con valores de 1.000 o mas. Ahora es '999,990.00'. Se agrego un
+    mensaje claro si el centro no existe.
+
+14) PKG_EJEMPLO: la variable global estaba en la parte publica y
+    cualquiera podia cambiarla. Se movio al cuerpo (privada), se
+    renombro a g_centros_mostrados (contaba centros, no lotes) y se
+    agrego fn_centros_mostrados para leerla.
+
+15) scripts_plsql_sigma_aqua.sql: el encabezado (titulo, integrantes e
+    instrucciones) no estaba comentado y daba error al ejecutar el
+    script. Se comento con "--". (Correccion hecha por el equipo.)
+
+---------------------------------------------------------------------
+ D) QUE NO CAMBIO
+---------------------------------------------------------------------
+- Los nombres de procedimientos, funciones y parametros publicos son
+  los mismos: el resto de los scripts sigue funcionando.
+- test_monitoreo.sql sigue siendo valido: con los datos de prueba se
+  esperan los mismos resultados (5 mediciones, 3 alertas, ICA 35/35/40).
+- triggers_monitoreo.sql esta duplicado (en la raiz y en
+  02_Triggers_y_Funciones). Ambas copias se actualizaron; conviene
+  dejar solo una.
+
+---------------------------------------------------------------------
+ E) COMO VERIFICAR
+---------------------------------------------------------------------
+1. Ejecutar en orden: PKG_MONITOREO_AGUA.sql, triggers_monitoreo.sql,
+   PKG_SIGMA_AQUA.sql.
+2. Revisar que no haya errores de compilacion:
+     SELECT NAME, TYPE, LINE, TEXT FROM USER_ERRORS ORDER BY NAME, SEQUENCE;
+3. Ejecutar test_monitoreo.sql: todo debe salir [OK].
+4. Ejecutar Comprobar.sql (raiz del proyecto): revisa estado de los
+   objetos, triggers, conteos, procesamiento masivo y auditoria.
+   Con las correcciones, la auditoria masiva debe terminar con:
+     Centros que cumplen       : 1   (Calbuco 1)
+     Centros con observaciones : 3   (Fiordo 2, Quellon Sur, Experimental 0)
+=====================================================================

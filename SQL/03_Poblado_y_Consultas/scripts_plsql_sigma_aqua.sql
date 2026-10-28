@@ -1,25 +1,25 @@
-================================================================================
-          SIGMA-AQUA: DATOS DE PRUEBA (BDY1103)
-================================================================================
-Proyecto   : SIGMA-Aqua (Sistema Integrado de Gestion y Monitorizacion Acuicola)
-Asignatura : BDY1103 - Taller de Base de Datos (Duoc UC)
-Integrantes: Matias Jeldres, Ignacio Salazar, Luciano Garrido
-Motor BD   : Oracle Database 21c
-================================================================================
+-- ================================================================================
+--          SIGMA-AQUA: DATOS DE PRUEBA (BDY1103)
+--================================================================================
+--Proyecto   : SIGMA-Aqua (Sistema Integrado de Gestion y Monitorizacion Acuicola)
+--Asignatura : BDY1103 - Taller de Base de Datos (Duoc UC)
+--Integrantes: Matias Jeldres, Ignacio Salazar, Luciano Garrido
+--Motor BD   : Oracle Database 21c
+--================================================================================
 
-INSTRUCCIONES DE USO:
-1. Ejecuta primero 'DataModeler.sql' (crea las 31 tablas del esquema).
-2. Ejecuta este archivo para cargar los datos de prueba minimos.
-3. Luego puedes ejecutar los scripts PL/SQL:
-   - Cursor_Explicito.sql  : cursores anidados con parametros y bucles anidados
-   - BDY1102_A1~2.sql      : tipos compuestos (RECORD y VARRAY)
-   - BDY1102_A1~3.sql      : trigger de alerta sanitaria
-   - BDY1102_A1~5..sql     : registro de traslado (dinamico)
-   - BDY1102_A1~6.sql      : registro de traslado
+--INSTRUCCIONES DE USO:
+--1. Ejecuta primero 'DataModeler.sql' (crea las 31 tablas del esquema).
+--2. Ejecuta este archivo para cargar los datos de prueba minimos.
+--3. Luego puedes ejecutar los scripts PL/SQL:
+--   - Cursor_Explicito.sql  : cursores anidados con parametros y bucles anidados
+--   - BDY1102_A1~2.sql      : tipos compuestos (RECORD y VARRAY)
+--   - BDY1102_A1~3.sql      : trigger de alerta sanitaria
+--   - BDY1102_A1~5..sql     : registro de traslado (dinamico)
+--   - BDY1102_A1~6.sql      : registro de traslado
 
-================================================================================
-DATOS DE PRUEBA MINIMOS
-================================================================================
+--================================================================================
+--DATOS DE PRUEBA MINIMOS
+--================================================================================
 
 SET DEFINE OFF;
 

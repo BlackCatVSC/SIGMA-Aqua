@@ -12,6 +12,7 @@ SET DEFINE OFF;
 --                                               fuera de rango.
 --                      * A NIVEL DE SENTENCIA : bloqueo de operaciones durante
 --                                               la ventana de mantenimiento.
+-- Version corregida: ver Correcciones_SIGMA-Aqua.txt
 -- ================================================================================
 
 -- ================================================================================
@@ -27,14 +28,17 @@ DECLARE
     v_id_tipo   SENSOR.ID_TIPO_SENSOR%TYPE;
     v_nombre    TIPO_SENSOR.NOMBRE_TIPO_SENSOR%TYPE;
     v_unidad    TIPO_SENSOR.UNIDAD_MEDIDA%TYPE;
+    v_tanque    TANQUE.NOMBRE_TANQUE%TYPE;
     v_id_centro CENTRO_CULTIVO.ID_CENTRO%TYPE;
     v_min       UMBRAL.VALOR_MIN%TYPE;
     v_max       UMBRAL.VALOR_MAX%TYPE;
     v_severidad UMBRAL.SEVERIDAD%TYPE;
+    v_id_alerta ALERTA.ID_ALERTA%TYPE;
 BEGIN
-    -- 1) Identifica tipo de sensor, unidad y centro del sensor que emitio la lectura
-    SELECT s.ID_TIPO_SENSOR, ts.NOMBRE_TIPO_SENSOR, ts.UNIDAD_MEDIDA, t.ID_CENTRO
-      INTO v_id_tipo, v_nombre, v_unidad, v_id_centro
+    -- 1) Identifica tipo de sensor, unidad, tanque y centro del sensor
+    SELECT s.ID_TIPO_SENSOR, ts.NOMBRE_TIPO_SENSOR, ts.UNIDAD_MEDIDA,
+           t.NOMBRE_TANQUE, t.ID_CENTRO
+      INTO v_id_tipo, v_nombre, v_unidad, v_tanque, v_id_centro
       FROM SENSOR s
       JOIN TIPO_SENSOR ts ON s.ID_TIPO_SENSOR = ts.ID_TIPO_SENSOR
       JOIN TANQUE t       ON s.ID_TANQUE = t.ID_TANQUE
@@ -54,36 +58,92 @@ BEGIN
             RETURN; -- sin umbral configurado: no corresponde evaluar
     END;
 
-    -- 3) Evaluacion de fuera de rango y generacion de alerta + accion correctiva
-    IF :NEW.VALOR < v_min OR :NEW.VALOR > v_max THEN
+    -- 3) Evaluacion de fuera de rango (un limite NULL no se evalua)
+    IF (v_min IS NOT NULL AND :NEW.VALOR < v_min)
+       OR (v_max IS NOT NULL AND :NEW.VALOR > v_max) THEN
+
         INSERT INTO ALERTA (ID_ALERTA, ID_SENSOR, ID_MEDICION, ID_TIPO_SENSOR,
                             VALOR, VALOR_MIN, VALOR_MAX, SEVERIDAD,
                             MENSAJE, FECHA_ALERTA, ESTADO_ALERTA)
         VALUES (seq_alerta.NEXTVAL, :NEW.ID_SENSOR, :NEW.ID_MEDICION, v_id_tipo,
                 :NEW.VALOR, v_min, v_max, v_severidad,
                 'Valor ' || v_nombre || ' (' || :NEW.VALOR || ' ' || v_unidad ||
-                ') fuera de rango [' || v_min || ' - ' || v_max || ']',
-                SYSDATE, 'PENDIENTE');
+                ') fuera de rango [' || v_min || ' - ' || v_max || '] en ' || v_tanque,
+                SYSDATE, 'PENDIENTE')
+        RETURNING ID_ALERTA INTO v_id_alerta;
 
         INSERT INTO ACCION_CORRECTIVA (DESCRIPCION_ACCION, ESTADO_ACCION, FECHA_ACCION, ID_ALERTA)
-        VALUES ('Revisar sensor ' || v_nombre || ' del tanque y evaluar parametros del agua',
-                'PENDIENTE', SYSDATE, seq_alerta.CURRVAL);
+        VALUES ('Revisar sensor ' || v_nombre || ' de ' || v_tanque ||
+                ' y evaluar parametros del agua',
+                'PENDIENTE', SYSDATE, v_id_alerta);
     END IF;
 END trg_evaluar_lectura_sensor;
 /
+--INSERT INTO HISTORIAL_MEDICIONES
+ -- (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
+--VALUES (seq_medicion.NEXTVAL, 1, 9.0, SYSDATE, 'NORMAL');
+--COMMIT;
+
+--INSERT INTO HISTORIAL_MEDICIONES
+ -- (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
+--VALUES (seq_medicion.NEXTVAL, 2, 21, SYSDATE, 'ALTA');
+
+--COMMIT;
+
+--INSERT INTO HISTORIAL_MEDICIONES
+ -- (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
+--VALUES (seq_medicion.NEXTVAL, 3, 10, SYSDATE, 'ALTA');
+--  COMMIT;
+
+--SELECT a.ID_ALERTA,
+
+    --a.ID_MEDICION,
+
+    --a.VALOR,
+
+    --a.SEVERIDAD,
+
+    --a.MENSAJE
+ --FROM ALERTA a
+
+ --ORDER BY a.ID_ALERTA;
+ --SELECT * FROM ACCION_CORRECTIVA ORDER BY ID_ACCION;
+
+
+-- 1) Acciones correctivas de las alertas de prueba
+
+--DELETE FROM ACCION_CORRECTIVA
+ -- WHERE ID_ALERTA IN (SELECT ID_ALERTA FROM ALERTA
+ --           WHERE (ID_SENSOR = 1 AND VALOR = 9.0)
+ --             OR (ID_SENSOR = 2 AND VALOR = 21));
+
+-- 2) Alertas de prueba
+
+--DELETE FROM ALERTA
+ --WHERE (ID_SENSOR = 1 AND VALOR = 9.0)
+  --OR (ID_SENSOR = 2 AND VALOR = 21);
+
+-- 3) Mediciones de prueba
+
+--DELETE FROM HISTORIAL_MEDICIONES
+ -- WHERE (ID_SENSOR = 1 AND VALOR = 9.0)
+ --  OR (ID_SENSOR = 2 AND VALOR = 21);
+--COMMIT;
+
 
 -- ================================================================================
 -- 2. TRIGGER A NIVEL DE SENTENCIA (sin FOR EACH ROW)
 --    Impide insertar/actualizar/borrar lecturas durante la ventana de
---    mantenimiento diaria (04:00 a 05:59). Se dispara UNA VEZ por sentencia,
---    independiente del numero de filas afectadas.
+--    mantenimiento diaria (04:00 a 05:59, HORA DE CHILE). Se dispara UNA VEZ
+--    por sentencia, independiente del numero de filas afectadas.
+--    Se usa la zona America/Santiago para no depender de la hora del servidor.
 -- ================================================================================
 CREATE OR REPLACE TRIGGER trg_ventana_mantenimiento
 BEFORE INSERT OR UPDATE OR DELETE ON HISTORIAL_MEDICIONES
 DECLARE
     v_hora NUMBER;
 BEGIN
-    v_hora := TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'));
+    v_hora := TO_NUMBER(TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'America/Santiago', 'HH24'));
     IF v_hora BETWEEN 4 AND 5 THEN
         RAISE_APPLICATION_ERROR(-20010,
             'Ventana de mantenimiento: no se permiten operaciones sobre mediciones entre 04:00 y 05:59.');
@@ -91,15 +151,5 @@ BEGIN
 END trg_ventana_mantenimiento;
 /
 
--- ================================================================================
--- 3. PRUEBAS SUGERIDAS
--- ================================================================================
--- a) Procesar lecturas y verificar alertas generadas:
---    BEGIN PKG_MONITOREO_AGUA.sp_procesar_todo; END;
---    /
---    SELECT * FROM ALERTA;
---    SELECT * FROM ACCION_CORRECTIVA;
---
--- b) Verificar que el trigger de sentencia bloquea en la ventana (solo si son
---    las 04:00 - 05:59); fuera de ella las operaciones pasan normalmente.
--- ================================================================================
+
+--DELETE FROM HISTORIAL_MEDICIONES WHERE 1 = 0;

@@ -9,6 +9,7 @@ SET SERVEROUTPUT ON;
 -- Descripcion      : Encapsula la logica de negocio de auditoria de biomasa y
 --                    normativa sanitaria (RN-001 y RN-002) en un solo objeto,
 --                    reutilizable desde otros programas PL/SQL y sentencias SQL.
+-- Version corregida: ver Correcciones_SIGMA-Aqua.txt
 -- ================================================================================
 
 -- ================================================================================
@@ -24,7 +25,8 @@ CREATE OR REPLACE PACKAGE PKG_SIGMA_AQUA AS
     gc_estado_activo   CONSTANT VARCHAR2(10) := 'ACTIVO';  -- estado vigente de centro/lote
 
     -- ----------------------------------------------------------------------------
-    -- EXCEPCIONES PUBLICAS: reglas de negocio enlazadas a codigos Oracle
+    -- EXCEPCIONES PUBLICAS: reglas de negocio enlazadas a codigos Oracle.
+    -- sp_auditar_centro las PROPAGA, por lo que otros programas pueden capturarlas.
     -- ----------------------------------------------------------------------------
     e_exceso_biomasa   EXCEPTION;
     PRAGMA EXCEPTION_INIT(e_exceso_biomasa, -20001);       -- RN-001: supera capacidad
@@ -50,7 +52,9 @@ CREATE OR REPLACE PACKAGE PKG_SIGMA_AQUA AS
     -- ----------------------------------------------------------------------------
     -- PROCEDIMIENTOS PUBLICOS (invocables desde otros programas PL/SQL)
     -- ----------------------------------------------------------------------------
-    -- CON parametro: audita un centro de cultivo especifico
+    -- CON parametro: audita un centro de cultivo especifico.
+    -- Si el centro no cumple, informa por pantalla y LANZA la excepcion
+    -- (e_exceso_biomasa / e_zona_restringida) para que el llamador decida.
     PROCEDURE sp_auditar_centro(p_id_centro NUMBER);
 
     -- SIN parametro: audita todos los centros de cultivo activos (informacion masiva)
@@ -62,6 +66,8 @@ END PKG_SIGMA_AQUA;
 -- ================================================================================
 -- 2. CUERPO DEL PACKAGE (PARTE PRIVADA + IMPLEMENTACION)
 --    Todo lo declarado aqui y NO expuesto en la especificacion es PRIVADO.
+--    IMPORTANTE: las funciones privadas solo se pueden llamar desde codigo
+--    PL/SQL, NUNCA dentro de una sentencia SQL (error PLS-00231).
 -- ================================================================================
 CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
 
@@ -70,8 +76,9 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
     -- ============================================================================
 
     -------------------------------------------------------------------------------
-    -- (PRIVADA) Obtiene el ultimo peso promedio (g) muestreado de un lote.
-    -- Si el lote no tiene muestreos, retorna el peso por defecto.
+    -- (PRIVADA) Obtiene el ultimo peso promedio (g) muestreado de un lote,
+    -- ignorando muestreos sin peso registrado.
+    -- Si el lote no tiene muestreos con peso, retorna el peso por defecto.
     -------------------------------------------------------------------------------
     FUNCTION f_peso_promedio(p_id_lote NUMBER) RETURN NUMBER IS
         v_peso NUMBER;
@@ -80,6 +87,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
           INTO v_peso
           FROM MUESTREO m
          WHERE m.ID_LOTE = p_id_lote
+           AND m.PESO_PROMEDIO_MUES IS NOT NULL
          ORDER BY m.FECHA_MUES DESC
          FETCH FIRST 1 ROW ONLY;
         RETURN v_peso;
@@ -140,18 +148,18 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
 
     -------------------------------------------------------------------------------
     -- (PUBLICA) Biomasa en kg de un lote = (peces actuales * peso promedio g) / 1000
+    -- Si la cantidad actual es NULL se considera 0 (evita que un NULL "contamine"
+    -- la suma del centro y la auditoria diga que cumple sin haber calculado).
     -------------------------------------------------------------------------------
     FUNCTION fn_biomasa_lote(p_id_lote NUMBER) RETURN NUMBER IS
         v_cantidad NUMBER;
-        v_peso     NUMBER;
     BEGIN
-        SELECT l.CANTIDAD_ACTUAL_LOTE
+        SELECT NVL(l.CANTIDAD_ACTUAL_LOTE, 0)
           INTO v_cantidad
           FROM LOTE l
          WHERE l.ID_LOTE = p_id_lote;
 
-        v_peso := f_peso_promedio(p_id_lote);
-        RETURN (v_cantidad * v_peso) / 1000;
+        RETURN (v_cantidad * f_peso_promedio(p_id_lote)) / 1000;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
             RETURN NULL;
@@ -159,10 +167,12 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
 
     -------------------------------------------------------------------------------
     -- (PUBLICA) Densidad en kg/m3 de un centro = biomasa total / volumen
+    -- La biomasa se acumula en PL/SQL (no dentro del SELECT) porque usa la
+    -- funcion privada f_peso_promedio a traves de fn_biomasa_lote.
     -------------------------------------------------------------------------------
     FUNCTION fn_densidad_centro(p_id_centro NUMBER) RETURN NUMBER IS
-        v_volumen   NUMBER;
-        v_biomasa   NUMBER;
+        v_volumen NUMBER;
+        v_biomasa NUMBER := 0;
     BEGIN
         SELECT c.VOLUMEN_CENTRO_M3
           INTO v_volumen
@@ -173,11 +183,12 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
             RETURN NULL; -- evita division por cero
         END IF;
 
-        SELECT NVL(SUM((l.CANTIDAD_ACTUAL_LOTE * f_peso_promedio(l.ID_LOTE)) / 1000), 0)
-          INTO v_biomasa
-          FROM LOTE l
-         WHERE l.ID_CENTRO = p_id_centro
-           AND UPPER(NVL(l.ESTADO_LOTE, 'ACTIVO')) = gc_estado_activo;
+        FOR r IN (SELECT l.ID_LOTE
+                    FROM LOTE l
+                   WHERE l.ID_CENTRO = p_id_centro
+                     AND UPPER(NVL(l.ESTADO_LOTE, 'ACTIVO')) = gc_estado_activo) LOOP
+            v_biomasa := v_biomasa + NVL(fn_biomasa_lote(r.ID_LOTE), 0);
+        END LOOP;
 
         RETURN v_biomasa / v_volumen;
     EXCEPTION
@@ -199,17 +210,19 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
     END fn_total_centros_activos;
 
     -------------------------------------------------------------------------------
-    -- (PUBLICA) Biomasa total (kg) de todos los lotes de una empresa
+    -- (PUBLICA) Biomasa total (kg) de todos los lotes activos de una empresa
+    -- Igual que fn_densidad_centro: se acumula en PL/SQL, no dentro del SELECT.
     -------------------------------------------------------------------------------
     FUNCTION fn_biomasa_total_empresa(p_id_empresa NUMBER) RETURN NUMBER IS
-        v_total NUMBER;
+        v_total NUMBER := 0;
     BEGIN
-        SELECT NVL(SUM((l.CANTIDAD_ACTUAL_LOTE * f_peso_promedio(l.ID_LOTE)) / 1000), 0)
-          INTO v_total
-          FROM LOTE l
-          JOIN CENTRO_CULTIVO c ON l.ID_CENTRO = c.ID_CENTRO
-         WHERE c.ID_EMPRESA = p_id_empresa
-           AND UPPER(NVL(l.ESTADO_LOTE, 'ACTIVO')) = gc_estado_activo;
+        FOR r IN (SELECT l.ID_LOTE
+                    FROM LOTE l
+                    JOIN CENTRO_CULTIVO c ON l.ID_CENTRO = c.ID_CENTRO
+                   WHERE c.ID_EMPRESA = p_id_empresa
+                     AND UPPER(NVL(l.ESTADO_LOTE, 'ACTIVO')) = gc_estado_activo) LOOP
+            v_total := v_total + NVL(fn_biomasa_lote(r.ID_LOTE), 0);
+        END LOOP;
         RETURN v_total;
     END fn_biomasa_total_empresa;
 
@@ -218,6 +231,8 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
     --   1) Valida RN-002 (zona restringida)
     --   2) Acumula biomasa por lote
     --   3) Valida RN-001 (exceso de biomasa)
+    -- Si hay un problema, lo informa por pantalla y lo PROPAGA (RAISE) para que
+    -- el programa que lo llamo pueda reaccionar.
     -------------------------------------------------------------------------------
     PROCEDURE sp_auditar_centro(p_id_centro NUMBER) IS
         v_nombre_centro  VARCHAR2(100);
@@ -226,7 +241,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
         v_estado_zona    VARCHAR2(30);
         v_bio_centro     NUMBER(12, 2) := 0;
         v_bio_lote       NUMBER(12, 2);
-        v_densidad       NUMBER(8, 2);
+        v_densidad       NUMBER(10, 2);
         v_msg_error      VARCHAR2(500);
 
         CURSOR c_lotes IS
@@ -257,20 +272,20 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
             RAISE_APPLICATION_ERROR(-20002, v_msg_error);
         END IF;
 
-        -- Acumula biomasa por cada lote del centro
-        FOR r_lote IN c_lotes LOOP
-            v_bio_lote  := fn_biomasa_lote(r_lote.ID_LOTE);
-            v_bio_centro := v_bio_centro + v_bio_lote;
-            p_log('    - Lote #' || r_lote.ID_LOTE || ' (' || r_lote.NOMBRE_COMUN_ESPECIE ||
-                  '): ' || TO_CHAR(r_lote.CANTIDAD_ACTUAL_LOTE, '999,999') || ' peces | Biomasa: ' ||
-                  TO_CHAR(v_bio_lote, '999,999.00') || ' kg | Mortalidad Acum: ' ||
-                  f_mortalidad_acum(r_lote.ID_LOTE));
-        END LOOP;
-
         -- Evita division por cero
         IF v_volumen = 0 THEN
             RAISE ZERO_DIVIDE;
         END IF;
+
+        -- Acumula biomasa por cada lote del centro
+        FOR r_lote IN c_lotes LOOP
+            v_bio_lote   := NVL(fn_biomasa_lote(r_lote.ID_LOTE), 0);
+            v_bio_centro := v_bio_centro + v_bio_lote;
+            p_log('    - Lote #' || r_lote.ID_LOTE || ' (' || r_lote.NOMBRE_COMUN_ESPECIE ||
+                  '): ' || TO_CHAR(NVL(r_lote.CANTIDAD_ACTUAL_LOTE, 0), '999,999') || ' peces | Biomasa: ' ||
+                  TO_CHAR(v_bio_lote, '999,999.00') || ' kg | Mortalidad Acum: ' ||
+                  f_mortalidad_acum(r_lote.ID_LOTE));
+        END LOOP;
 
         v_densidad := v_bio_centro / v_volumen;
 
@@ -284,26 +299,37 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
 
         p_log('    ------------------------------------------------------------');
         p_log('    RESULTADO : Biomasa Total = ' || TO_CHAR(v_bio_centro, '999,999,990.00') || ' kg');
-        p_log('    DENSIDAD  : ' || TO_CHAR(v_densidad, '990.00') ||
+        p_log('    DENSIDAD  : ' || TO_CHAR(v_densidad, '999,990.00') ||
               ' kg/m3 (Permitido maximo: ' || v_densidad_max || ' kg/m3)');
         p_log('    ESTADO    : CUMPLE NORMATIVA SANITARIA Y DE BIOMASA (OK)');
 
     EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            p_log('    >>> ERROR: no existe el centro #' || p_id_centro);
+            RAISE;
         WHEN ZERO_DIVIDE THEN
             p_log('    >>> ERROR TECNICO: Se detecto un centro con volumen 0 m3.');
+            RAISE;
         WHEN e_exceso_biomasa THEN
             p_log('    >>> BLOQUEO RN-001: ' || SQLERRM);
+            RAISE;
         WHEN e_zona_restringida THEN
             p_log('    >>> BLOQUEO RN-002: ' || SQLERRM);
+            RAISE;
         WHEN OTHERS THEN
             p_log('    >>> ERROR INESPERADO [' || SQLCODE || ']: ' || SQLERRM);
+            RAISE;
     END sp_auditar_centro;
 
     -------------------------------------------------------------------------------
     -- (PUBLICA, sin parametro) Auditoria masiva: recorre TODOS los centros activos.
     -- Cada centro se procesa de forma aislada (un error no detiene la auditoria).
+    -- Al final informa cuantos centros cumplen y cuantos tienen observaciones.
     -------------------------------------------------------------------------------
     PROCEDURE sp_auditar_todos IS
+        v_ok          NUMBER := 0;
+        v_observados  NUMBER := 0;
+
         CURSOR c_centros IS
             SELECT ID_CENTRO
               FROM CENTRO_CULTIVO
@@ -315,13 +341,16 @@ CREATE OR REPLACE PACKAGE BODY PKG_SIGMA_AQUA AS
         FOR r_centro IN c_centros LOOP
             BEGIN
                 sp_auditar_centro(r_centro.ID_CENTRO);
+                v_ok := v_ok + 1;
             EXCEPTION
                 WHEN OTHERS THEN
-                    p_log('    >>> No fue posible auditar el centro #' ||
-                          r_centro.ID_CENTRO || ': ' || SQLERRM);
+                    -- el detalle ya fue informado por sp_auditar_centro
+                    v_observados := v_observados + 1;
             END;
         END LOOP;
-        p_log(CHR(10) || '=== FIN DE LA AUDITORIA ===');
+        p_log(CHR(10) || '    Centros que cumplen       : ' || v_ok);
+        p_log('    Centros con observaciones : ' || v_observados);
+        p_log('=== FIN DE LA AUDITORIA ===');
     END sp_auditar_todos;
 
 END PKG_SIGMA_AQUA;
@@ -334,8 +363,16 @@ END PKG_SIGMA_AQUA;
 --    BEGIN PKG_SIGMA_AQUA.sp_auditar_todos; END;
 --    /
 --
--- b) Auditar un centro especifico (procedimiento con parametro):
---    BEGIN PKG_SIGMA_AQUA.sp_auditar_centro(1); END;
+-- b) Auditar un centro especifico capturando las excepciones publicas
+--    (procedimiento con parametro usado desde otro programa PL/SQL):
+--    BEGIN
+--        PKG_SIGMA_AQUA.sp_auditar_centro(1);
+--    EXCEPTION
+--        WHEN PKG_SIGMA_AQUA.e_exceso_biomasa THEN
+--            DBMS_OUTPUT.PUT_LINE('Accion: programar cosecha o traslado de peces.');
+--        WHEN PKG_SIGMA_AQUA.e_zona_restringida THEN
+--            DBMS_OUTPUT.PUT_LINE('Accion: suspender operaciones del centro.');
+--    END;
 --    /
 --
 -- c) Usar funciones publicas directamente en SQL:
