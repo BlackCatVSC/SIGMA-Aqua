@@ -1,0 +1,315 @@
+SIGMA-AQUA EV3 - GUIA DE INSTALACION, VERIFICACION Y EJECUCION Windows
+10 / Windows 11 | PowerShell Actualizado: 23-11-2026
+
+OBJETIVO Instalar el entorno de MongoDB y Node.js en otro PC o laptop,
+descargar el proyecto SIGMA-Aqua y ejecutar los scripts de la evaluacion
+EV3.
+
+IMPORTANTE - Abrir PowerShell como administrador para instalaciones y
+servicios. - Para ejecutar los scripts, PowerShell normal es
+suficiente. - Se necesita conexion a Internet para instalar programas y
+clonar GitHub. - La carpeta NoSQL_EV3 debe contener los archivos .js y
+verificar_archivos.ps1. - El archivo 06_validaciones_negocio.js debe ser
+la VERSION CORREGIDA que se subira al repositorio. Esta guia NO incluye
+instrucciones para editarlo. - Estos comandos son para Windows. En Linux
+o macOS la instalacion cambia.
+
+============================================================ 1.
+COMPROBAR WINGET
+============================================================ winget
+–version
+
+Si winget no existe, instalar/actualizar “App Installer” de Microsoft y
+reiniciar PowerShell.
+
+Consultar identificadores disponibles en el equipo: winget search –id
+OpenJS.NodeJS.LTS –exact winget search –id MongoDB.Server –exact winget
+search –id MongoDB.Shell –exact winget search –id MongoDB.Compass.Full
+–exact winget search MongoDB.Compass winget search –id Git.Git –exact
+
+NOTA: Los IDs de winget pueden variar entre paquetes/versiones. Si
+MongoDB.Compass.Full no aparece, usar el ID mostrado por ‘winget search
+MongoDB.Compass’ en el comando de instalacion.
+
+============================================================ 2. INSTALAR
+NODE.JS LTS ============================================================
+winget install –id OpenJS.NodeJS.LTS –exact –source winget
+–accept-package-agreements –accept-source-agreements
+
+Cerrar y volver a abrir PowerShell. Verificar: node –version npm
+–version where.exe node
+
+Version comprobada en el equipo original: Node.js v26.13.1. En otros
+equipos puede instalarse una version LTS posterior.
+
+============================================================ 3. INSTALAR
+MONGODB SERVER (MOTOR DE BASE DE DATOS)
+============================================================ winget
+install –id MongoDB.Server –exact –source winget
+–accept-package-agreements –accept-source-agreements
+
+Verificar el servicio: Get-Service MongoDB
+
+Si el servicio existe pero esta detenido (PowerShell administrador):
+Start-Service MongoDB
+
+Comprobar que esta en ejecucion: Get-Service MongoDB | Select-Object
+Name, Status
+
+Version comprobada en el equipo original: MongoDB Server 9.0.8. La
+instalacion debe crear/configurar el servicio MongoDB. Si no aparece el
+servicio, revisar el instalador de MongoDB Server.
+
+============================================================ 4. INSTALAR
+MONGODB SHELL (MONGOSH)
+============================================================ winget
+install –id MongoDB.Shell –exact –source winget
+–accept-package-agreements –accept-source-agreements
+
+Cerrar y reabrir PowerShell. Verificar: mongosh –version where.exe
+mongosh
+
+Version comprobada en el equipo original: mongosh 2.14.1.
+
+============================================================ 5. INSTALAR
+MONGODB COMPASS (INTERFAZ GRAFICA)
+============================================================ Comprobar
+el ID exacto disponible: winget search MongoDB.Compass
+
+Si el catalogo muestra MongoDB.Compass.Full: winget install –id
+MongoDB.Compass.Full –exact –source winget –accept-package-agreements
+–accept-source-agreements
+
+Si muestra otro ID, sustituirlo en: winget install –id
+ID_MOSTRADO_POR_WINGET –exact –source winget –accept-package-agreements
+–accept-source-agreements
+
+Version comprobada en el equipo original: MongoDB Compass 1.53.3.
+Compass es opcional para ejecutar los scripts, pero muy util para
+mostrar documentos, colecciones, validadores e indices.
+
+============================================================ 6. INSTALAR
+GIT (PARA DESCARGAR EL REPOSITORIO)
+============================================================ winget
+install –id Git.Git –exact –source winget –accept-package-agreements
+–accept-source-agreements
+
+Cerrar y reabrir PowerShell. Verificar: git –version
+
+Si Git ya esta instalado, omitir la instalacion.
+
+============================================================ 7.
+VERIFICACION GENERAL DEL ENTORNO
+============================================================ node
+–version npm –version mongosh –version git –version Get-Service MongoDB
+mongosh “mongodb://127.0.0.1:27017” –eval “db.runCommand({ping:1})”
+
+Resultado esperado de la ultima linea: { ok: 1 }
+
+Si aparece ‘mongosh no se reconoce’, reiniciar PowerShell y revisar
+PATH. Si la conexion falla, revisar que el servicio MongoDB este
+Running.
+
+============================================================ 8.
+DESCARGAR EL PROYECTO DESDE GITHUB
+============================================================
+Repositorio: https://github.com/BlackCatVSC/SIGMA-Aqua
+
+Elegir una carpeta de trabajo, por ejemplo: cd “$HOME”
+
+Clonar: git clone https://github.com/BlackCatVSC/SIGMA-Aqua.git
+
+Entrar a los scripts: cd .-Aqua_EV3
+
+NOTA: Si la carpeta NoSQL_EV3 esta en una rama distinta de la rama
+predeterminada, cambiar primero a esa rama: git branch -a git switch
+NOMBRE_DE_LA_RAMA
+
+Si el proyecto ya existe en el equipo, NO volver a clonarlo. Entrar a la
+carpeta correspondiente con cd.
+
+Ejemplo de la ruta utilizada en el equipo original: cd “C:-Aqua_EV3”
+
+En otra laptop la ruta sera distinta. Usar la ruta real del equipo.
+
+============================================================ 9.
+VERIFICAR LOS ARCHIVOS DEL PROYECTO
+============================================================ Desde la
+carpeta NoSQL_EV3:
+
+Get-ChildItem powershell -NoProfile -ExecutionPolicy Bypass -File
+._archivos.ps1
+
+Resultado observado en el equipo original: OK: 10 archivos obligatorios
+presentes. OK: sintaxis JavaScript revisada con Node.
+
+Verificar sintaxis individual del archivo de reglas de negocio: node
+–check .\06_validaciones_negocio.js
+
+Si no aparece ningun error, la sintaxis es valida.
+
+============================================================ 10.
+EJECUTAR LA BASE DE DATOS EN ORDEN
+============================================================ ATENCION:
+Los pasos 01 y 02 son para la configuracion inicial de una base de datos
+nueva. No ejecutar 02 repetidamente sobre datos existentes sin revisar
+antes si el script es idempotente o puede duplicar datos.
+
+01 - Crear colecciones, validadores e indices: mongosh
+“mongodb://127.0.0.1:27017” –file .\01_creacion.js
+
+Resultado esperado: OK: colecciones, validadores e indices creados en
+sigma_aqua
+
+02 - Cargar datos de ejemplo: mongosh “mongodb://127.0.0.1:27017” –file
+.\02_datos_iniciales.js
+
+Resultado observado: centros: 2 mediciones: 5 alertas: 3
+
+03 - Demostrar CREATE, READ, UPDATE y DELETE: mongosh
+“mongodb://127.0.0.1:27017” –file .\03_crud.js
+
+Resultado observado: CREATE correcto READ correcto UPDATE: matchedCount
+1, modifiedCount 1 DELETE: deletedCount 1 VERIFICACION: registros
+restantes = 0
+
+04 - Pruebas basicas: mongosh “mongodb://127.0.0.1:27017” –file
+.\04_pruebas.js
+
+Resultado observado: RESULTADO: 8 correctas, 0 fallidas
+
+05 - Consultas avanzadas y agregaciones: mongosh
+“mongodb://127.0.0.1:27017” –file .\05_consultas_avanzadas.js
+
+Muestra: - Mediciones recientes por centro. - Alertas pendientes por
+severidad. - Promedio de mediciones por tipo de sensor.
+
+06 - Validaciones de negocio (usar el archivo YA CORREGIDO): mongosh
+“mongodb://127.0.0.1:27017” –file .\06_validaciones_negocio.js
+
+Resultado observado: referenciasInvalidas: 0 fueraDeRango: 3
+
+Las 3 mediciones fuera de rango corresponden a limites ILUSTRATIVOS, no
+a umbrales normativos oficiales. No son fallas del script.
+
+07 - Pruebas ampliadas: mongosh “mongodb://127.0.0.1:27017” –file
+.\07_pruebas_ampliadas.js
+
+Resultado observado: PRUEBAS AMPLIADAS: 5 correctas, 0 fallidas
+
+TOTAL DE PRUEBAS AUTOMATIZADAS COMPROBADAS: 13/13.
+
+============================================================ 11.
+VERIFICACIONES DIRECTAS EN MONGODB
+============================================================ Comprobar
+conexion: mongosh “mongodb://127.0.0.1:27017” –eval
+“db.runCommand({ping:1})”
+
+Listar colecciones de sigma_aqua: mongosh
+“mongodb://127.0.0.1:27017/sigma_aqua” –eval “db.getCollectionNames()”
+
+Contar documentos: mongosh “mongodb://127.0.0.1:27017/sigma_aqua” –eval
+“printjson({centros:db.centros.countDocuments({}),mediciones:db.mediciones.countDocuments({}),alertas:db.alertas.countDocuments({})})”
+
+Ver indices de mediciones: mongosh
+“mongodb://127.0.0.1:27017/sigma_aqua” –eval
+“printjson(db.mediciones.getIndexes())”
+
+Ver un centro: mongosh “mongodb://127.0.0.1:27017/sigma_aqua” –eval
+“printjson(db.centros.findOne({}))”
+
+Ver una medicion: mongosh “mongodb://127.0.0.1:27017/sigma_aqua” –eval
+“printjson(db.mediciones.findOne({}))”
+
+Ver una alerta: mongosh “mongodb://127.0.0.1:27017/sigma_aqua” –eval
+“printjson(db.alertas.findOne({}))”
+
+============================================================ 12. ABRIR
+LA BASE DE DATOS EN MONGODB COMPASS
+============================================================ 1. Abrir
+MongoDB Compass desde el menu Inicio. 2. Conectarse a:
+mongodb://127.0.0.1:27017 3. Expandir la base de datos ‘sigma_aqua’. 4.
+Revisar colecciones: - centros: 2 documentos de muestra. - mediciones: 5
+documentos de muestra. - alertas: 3 documentos de muestra. 5. Abrir
+‘mediciones’ > ‘Indexes’ para revisar: - id (UNIQUE). - codigoMedicion_1
+(UNIQUE). - codigoCentro_1_fecha_-1 (COMPUESTO). 6. Revisar pestañas
+‘Documents’, ‘Indexes’ y ‘Validation’.
+
+Los conteos anteriores corresponden a la carga inicial verificada, no a
+un requisito de cantidad fija en cualquier base de datos.
+
+============================================================ 13.
+COMANDOS UTILES DE DIAGNOSTICO
+============================================================ Ver
+ubicacion de programas: where.exe node where.exe npm where.exe mongosh
+where.exe git
+
+Ver servicio: Get-Service MongoDB
+
+Iniciar servicio si esta detenido (administrador): Start-Service MongoDB
+
+Reiniciar servicio si es necesario (administrador): Restart-Service
+MongoDB
+
+Comprobar puerto 27017: Get-NetTCPConnection -LocalPort 27017 -State
+Listen -ErrorAction SilentlyContinue
+
+Verificar paquetes instalados por winget: winget list –id
+OpenJS.NodeJS.LTS winget list –id MongoDB.Server winget list –id
+MongoDB.Shell winget list MongoDB.Compass winget list –id Git.Git
+
+Revisar sintaxis de todos los archivos JS: Get-ChildItem .*.js |
+ForEach-Object { node –check $_.FullName }
+
+============================================================ 14.
+PROBLEMAS FRECUENTES
+============================================================ A. ‘node’,
+‘mongosh’ o ‘git’ no se reconoce: Cerrar PowerShell y abrirlo
+nuevamente. Comprobar instalacion con ‘winget list’ y PATH con
+‘where.exe’.
+
+B. Error de conexion ECONNREFUSED a 127.0.0.1:27017: Get-Service MongoDB
+Start-Service MongoDB mongosh “mongodb://127.0.0.1:27017” –eval
+“db.runCommand({ping:1})”
+
+C. Error al ejecutar scripts PowerShell por ExecutionPolicy: Usar:
+powershell -NoProfile -ExecutionPolicy Bypass -File ._archivos.ps1 No es
+necesario cambiar permanentemente la politica del equipo.
+
+D. Archivo no encontrado: Comprobar: Get-Location Get-ChildItem Debe
+ejecutarse desde la carpeta NoSQL_EV3.
+
+E. Clave duplicada E11000: Probablemente se intenta insertar un codigo
+ya existente. Revisar si se ejecuto previamente 02_datos_iniciales.js o
+si la base ya tiene registros. No borrar datos sin respaldo.
+
+F. 06_validaciones_negocio.js muestra referenciasInvalidas > 0: Revisar
+los datos de centros, tanques y sensores. Usar el script corregido del
+repositorio. No ocultar ni ignorar inconsistencias reales.
+
+G. ‘fueraDeRango: 3’: Es el resultado esperado con los datos de
+demostracion y los umbrales ilustrativos utilizados en el proyecto.
+
+H. MongoDB Compass no muestra datos: Verificar que Compass se conecte al
+MISMO servidor local 127.0.0.1:27017. Revisar que la base seleccionada
+sea ‘sigma_aqua’.
+
+============================================================ 15.
+SECUENCIA RAPIDA PARA OTRA LAPTOP YA PREPARADA
+============================================================ cd
+“RUTA_REAL-Aqua_EV3” Get-Service MongoDB mongosh
+“mongodb://127.0.0.1:27017” –eval “db.runCommand({ping:1})” powershell
+-NoProfile -ExecutionPolicy Bypass -File ._archivos.ps1 mongosh
+“mongodb://127.0.0.1:27017” –file .\01_creacion.js mongosh
+“mongodb://127.0.0.1:27017” –file .\02_datos_iniciales.js mongosh
+“mongodb://127.0.0.1:27017” –file .\03_crud.js mongosh
+“mongodb://127.0.0.1:27017” –file .\04_pruebas.js mongosh
+“mongodb://127.0.0.1:27017” –file .\05_consultas_avanzadas.js mongosh
+“mongodb://127.0.0.1:27017” –file .\06_validaciones_negocio.js mongosh
+“mongodb://127.0.0.1:27017” –file .\07_pruebas_ampliadas.js
+
+NOTA: La secuencia rapida completa se recomienda SOLO para una base
+nueva y vacia. En equipos con datos existentes, no repetir la carga
+inicial sin verificar su efecto.
+
+FIN DE LA GUIA

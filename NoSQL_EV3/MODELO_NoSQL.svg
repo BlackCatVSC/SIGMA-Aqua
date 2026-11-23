@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="490" viewBox="0 0 1000 490">
+<rect width="1000" height="490" fill="#f7fafc"/>
+<text x="38" y="49" font-size="26" font-family="Arial" font-weight="bold" fill="#142e45">SIGMA-Aqua · Modelo documental MongoDB (EV3)</text>
+<g font-family="Arial" font-size="16">
+<rect x="40" y="105" width="270" height="270" rx="14" fill="white" stroke="#357c90" stroke-width="3"/>
+<text x="60" y="142" font-size="22" font-weight="bold" fill="#155267">centros</text>
+<text x="60" y="185">codigoCentro (único)</text><text x="60" y="219">nombre · estado</text>
+<text x="60" y="253">tanques [embebidos]</text><text x="75" y="287">codigoTanque · nombre</text><text x="75" y="321">sensores [lista]</text>
+<rect x="364" y="105" width="275" height="270" rx="14" fill="white" stroke="#357c90" stroke-width="3"/>
+<text x="385" y="142" font-size="22" font-weight="bold" fill="#155267">mediciones</text>
+<text x="385" y="185">codigoMedicion (único)</text><text x="385" y="219">codigoCentro · codigoTanque</text>
+<text x="385" y="253">tipoSensor · valor · unidad</text><text x="385" y="287">fecha · estado</text>
+<rect x="692" y="105" width="265" height="270" rx="14" fill="white" stroke="#357c90" stroke-width="3"/>
+<text x="714" y="142" font-size="22" font-weight="bold" fill="#155267">alertas</text>
+<text x="714" y="185">codigoAlerta (único)</text><text x="714" y="219">codigoMedicion</text>
+<text x="714" y="253">codigoCentro · severidad</text><text x="714" y="287">mensaje · estado · fecha</text>
+<path d="M310 193 H364 M639 193 H692" stroke="#d48a29" stroke-width="3" stroke-dasharray="7 6"/>
+<text x="42" y="424" font-size="16" fill="#465b69">Líneas punteadas: referencias lógicas por código (sin claves foráneas automáticas).</text>
+<text x="42" y="451" font-size="16" fill="#465b69">Datos ilustrativos para la EV3 · MongoDB complementa el modelo Oracle existente.</text>
+</g></svg>
