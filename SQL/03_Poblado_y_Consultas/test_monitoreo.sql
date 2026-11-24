@@ -13,6 +13,7 @@ SET DEFINE OFF;
 -- ================================================================================
 
 DECLARE
+    v_fallos NUMBER := 0;
     v_count  NUMBER;
     v_ica    NUMBER;
     v_prom   NUMBER;
@@ -24,6 +25,7 @@ DECLARE
         IF p_ok THEN
             DBMS_OUTPUT.PUT_LINE('[OK]    ' || p_desc);
         ELSE
+            v_fallos := v_fallos + 1;
             DBMS_OUTPUT.PUT_LINE('[ERROR] ' || p_desc);
         END IF;
     END assert;
@@ -39,7 +41,7 @@ BEGIN
     DELETE FROM HISTORIAL_MEDICIONES;
     DELETE FROM MEDICIONES_STAGING;
     DELETE FROM ULTIMAS_MEDICIONES;
-    COMMIT;
+    -- Sin COMMIT: las pruebas se revierten al finalizar.
 
     -- 2) REINSERCION DEL ESTADO INICIAL
     INSERT INTO ULTIMAS_MEDICIONES (ID_TANQUE, VALOR_PH, VALOR_OXIGENO, VALOR_TEMPERATURA, VALOR_SALINIDAD, VALOR_TURBIDEZ, FECHA_ACTUALIZACION)
@@ -59,7 +61,7 @@ BEGIN
     VALUES (7, 3, 7.5, SYSDATE, 'PENDIENTE');
     INSERT INTO MEDICIONES_STAGING (ID_SENSOR, ID_CENTRO, VALOR, FECHA_HORA, ESTADO_PROCESO)
     VALUES (8, 3, 3.5, SYSDATE, 'PENDIENTE');
-    COMMIT;
+    -- Sin COMMIT: las pruebas se revierten al finalizar.
 
     -- 3) EJECUTAR EL PROCESAMIENTO MASIVO (procedimiento SIN parametros)
     PKG_MONITOREO_AGUA.sp_procesar_todo;
@@ -101,10 +103,13 @@ BEGIN
     PKG_MONITOREO_AGUA.sp_procesar_lecturas_masivas(1, SYSDATE, v_total, v_cod);
     assert(v_total = 1 AND v_cod = 0,
            'sp_procesar_lecturas_masivas procesa 1 fila, codigo 0 (obtenido total=' || v_total || ', cod=' || v_cod || ')');
-    COMMIT;
+    -- Sin COMMIT: las pruebas se revierten al finalizar.
 
     DBMS_OUTPUT.PUT_LINE('====================================================');
+    ROLLBACK;
+    IF v_fallos > 0 THEN RAISE_APPLICATION_ERROR(-20090, 'Pruebas fallidas: ' || v_fallos); END IF;
     DBMS_OUTPUT.PUT_LINE(' FIN DEL TEST');
     DBMS_OUTPUT.PUT_LINE('====================================================');
+EXCEPTION WHEN OTHERS THEN ROLLBACK; RAISE;
 END;
 /

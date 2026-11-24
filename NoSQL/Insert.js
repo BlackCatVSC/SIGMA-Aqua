@@ -1,8 +1,7 @@
-use('sigma_aqua');
-db.reportes_jaula.drop();
-
+(() => {
+const coleccion = db.getSiblingDB("sigma_aqua").getCollection("reportes_jaula");
 // ===================== CREATE =====================
-db.reportes_jaula.insertOne({
+const reporte = {
   "codigo_reporte": "REP-J12-20261118",
   "estado": "ALERTA",
   "peces_vivos": 9800,
@@ -17,5 +16,8 @@ db.reportes_jaula.insertOne({
     { "parametro": "temp", "valor": 12.4 }
   ],
   "nota_temporal": "Revisar sensor de pH",
-  "fecha_reporte": new Date("2026-11-18T08:00:00")
-});
+  "fecha_reporte": new Date("2026-11-18T08:00:00-03:00")
+};
+coleccion.createIndex({codigo_reporte: 1}, {unique: true});
+printjson(coleccion.updateOne({codigo_reporte: reporte.codigo_reporte}, {$setOnInsert: reporte}, {upsert: true}));
+})();
