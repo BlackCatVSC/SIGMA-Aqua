@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="2E8CE963-A627-59DD-00EA-32198A17A9F5" containerWithKeyObject="944D5CCF-D5E0-D06B-DCD1-5790C60F0272" localFKIndex="EC95A5B0-3235-1607-69BB-7EA27A0FD3BF" name="FK_TRAS_TRAB">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>17C3FA61-ECB7-FCE3-5699-DBFE55E15B34</importedID>
+<referredTableLongName>TRABAJADOR</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>C8353F6A-77D9-8CA1-616D-E6425B9B48BE</referredTableID>
+<keyObject>DB217FDE-18B5-D7A7-A1DC-B02A09835CD8</keyObject>
+<referredKeyID>DB217FDE-18B5-D7A7-A1DC-B02A09835CD8</referredKeyID>
+<mandatory>false</mandatory>
+<refColNames>ID_TRABAJADOR</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

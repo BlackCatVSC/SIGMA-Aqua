@@ -1,0 +1,5 @@
+SIGMA-AQUA V4
+Abra MENU_SIGMA_AQUA.cmd. En PC nuevo use 01_Servicios/INSTALAR_SIGMA_AQUA.cmd. En PC con v3 use INICIAR y VERIFICAR. Se conserva proyecto Docker sigma_aqua_v2 y credenciales locales. Windows x64, Docker Desktop Linux/WSL2, virtualizacion, internet y espacio suficiente. Winget puede requerir reinicio.
+Las pruebas Oracle usan rollback sobre esquema de demostracion: no ejecutar con usuarios activos. Mongo usa una BD temporal. Evidencias no modifican datos. El informe anterior es referencia historica, no describe exclusivamente el modelo actual.
+Respaldos: Mongo archive y Oracle Data Pump (requiere acceso READ/WRITE a DATA_PUMP_DIR; administrador debe concederlo si falta). Restauracion Mongo en BD nueva; Oracle requiere importacion supervisada a esquema nuevo con REMAP_SCHEMA, nunca sobre el original. Actualizacion descarga copia separada. SQL Developer es opcional y debe estar instalado.
+V4: cambios revisados estaticamente; falta ejecutar en Windows y probar instalacion limpia.

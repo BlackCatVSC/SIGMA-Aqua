@@ -1,0 +1,16 @@
+services:
+  mongo:
+    image: mongo:8.0
+    ports: ['127.0.0.1:27018:27017']
+    volumes: [mongo_data:/data/db]
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    environment:
+      ORACLE_PWD: ${ORACLE_PWD:?required}
+    ports: ['127.0.0.1:1522:1521']
+    volumes: [oracle_data:/opt/oracle/oradata]
+    shm_size: 1g
+    stop_grace_period: 180s
+volumes:
+  mongo_data:
+  oracle_data:

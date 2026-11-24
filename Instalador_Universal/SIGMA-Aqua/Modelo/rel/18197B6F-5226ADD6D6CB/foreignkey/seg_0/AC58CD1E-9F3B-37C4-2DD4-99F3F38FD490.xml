@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="AC58CD1E-9F3B-37C4-2DD4-99F3F38FD490" containerWithKeyObject="B5064555-802A-87B9-ABD9-E79A74F3DB0C" localFKIndex="1992F1F7-A64C-1BB6-2B6D-FE17BEB4E9D4" name="FK_TRAT_REG">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>90147CBD-CB77-BDA6-6A6A-561BF3935DFD</importedID>
+<referredTableLongName>REGISTRO_SANITARIO</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>4401517B-AE95-FCB1-EDF2-025630BF566E</referredTableID>
+<keyObject>096D7F3A-4E5E-7D23-651A-DE43D92CBAFF</keyObject>
+<referredKeyID>096D7F3A-4E5E-7D23-651A-DE43D92CBAFF</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_REGISTRO</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

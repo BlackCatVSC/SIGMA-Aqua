@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<relationalModel class="oracle.dbtools.crest.model.design.relational.RelationalDesign" name="Relational_1" id="18197B6F-6873-38BF-5ACD-5226ADD6D6CB" mainViewID="F73B50AC-129F-AD41-2783-B1AD167B32CE">
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:07:59 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+<selectedRDBMSSite>01F6E6D1-21D0-CFBD-ABDD-3988D1813575</selectedRDBMSSite>
+<importDDLFileStamps>
+<importDDLFileStamp class="oracle.dbtools.crest.imports.DDLFileStamp">
+<fileName>DataModeler.sql</fileName>
+<pathName>D:\Base datos\SIGMA-AQUA\SIGMA-Aqua</pathName>
+<dbType>17</dbType>
+</importDDLFileStamp>
+</importDDLFileStamps>
+</relationalModel>

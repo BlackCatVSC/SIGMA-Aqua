@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="B3DA555E-36BC-C98C-AD1F-780E99B26A40" containerWithKeyObject="B5064555-802A-87B9-ABD9-E79A74F3DB0C" localFKIndex="CD218831-FF4E-5DC5-4758-A368C0842D7D" name="FK_TRAT_PROD">
+<sourceDDLFile>DataModeler.sql</sourceDDLFile>
+<createdBy>Shiren</createdBy>
+<createdTime>2026-08-31 01:09:17 UTC</createdTime>
+<ownerDesignName>Modelo</ownerDesignName>
+<importedID>FF3FBC5A-A8CC-862E-31CA-D7120AB1ED4F</importedID>
+<referredTableLongName>PRODUCTO</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>535204B3-6303-0889-483E-17AF2124289D</referredTableID>
+<keyObject>4AD6D424-0E2A-493C-BA69-DF67E70F65C3</keyObject>
+<referredKeyID>4AD6D424-0E2A-493C-BA69-DF67E70F65C3</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_PRODUCTO</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>
