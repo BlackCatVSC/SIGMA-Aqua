@@ -1,51 +1,83 @@
+SET SERVEROUTPUT ON
+SET DEFINE OFF
+WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
 
-INSERT INTO HISTORIAL_MEDICIONES
-  (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
-VALUES (seq_medicion.NEXTVAL, 1, 9.0, SYSDATE, 'NORMAL');
-COMMIT;
+DECLARE
+    v_ph NUMBER;
+    v_ox NUMBER;
+    v_temp NUMBER;
+    v_count NUMBER;
 
-INSERT INTO HISTORIAL_MEDICIONES
-  (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
-VALUES (seq_medicion.NEXTVAL, 2, 21, SYSDATE, 'ALTA');
+    PROCEDURE comprobar(p_ok BOOLEAN, p_msg VARCHAR2) IS
+    BEGIN
+        IF p_ok THEN
+            DBMS_OUTPUT.PUT_LINE('[OK] ' || p_msg);
+        ELSE
+            RAISE_APPLICATION_ERROR(-20091, p_msg);
+        END IF;
+    END;
+BEGIN
+    SAVEPOINT prueba_trigger;
 
-COMMIT;
+    v_ph := seq_medicion.NEXTVAL;
+    v_ox := seq_medicion.NEXTVAL;
+    v_temp := seq_medicion.NEXTVAL;
 
-INSERT INTO HISTORIAL_MEDICIONES
-  (ID_MEDICION, ID_SENSOR, VALOR, FECHA_HORA, ESTADO_MEDICION)
-VALUES (seq_medicion.NEXTVAL, 3, 10, SYSDATE, 'ALTA');
-  COMMIT;
+    INSERT INTO HISTORIAL_MEDICIONES
+    VALUES (v_ph, 1, 9, SYSDATE, 'NORMAL');
 
-SELECT a.ID_ALERTA,
+    INSERT INTO HISTORIAL_MEDICIONES
+    VALUES (v_ox, 2, 21, SYSDATE, 'ALTA');
 
-    a.ID_MEDICION,
+    INSERT INTO HISTORIAL_MEDICIONES
+    VALUES (v_temp, 3, 10, SYSDATE, 'NORMAL');
 
-    a.VALOR,
+    SELECT COUNT(*) INTO v_count
+    FROM HISTORIAL_MEDICIONES
+    WHERE ID_MEDICION IN (v_ph, v_ox, v_temp);
 
-    a.SEVERIDAD,
+    comprobar(v_count = 3, 'Tres mediciones registradas');
 
-    a.MENSAJE
- FROM ALERTA a
+    SELECT COUNT(*) INTO v_count
+    FROM ALERTA
+    WHERE ID_MEDICION = v_ph;
 
- ORDER BY a.ID_ALERTA;
- SELECT * FROM ACCION_CORRECTIVA ORDER BY ID_ACCION;
+    comprobar(v_count = 1, 'Alerta de pH generada');
 
+    SELECT COUNT(*) INTO v_count
+    FROM ALERTA
+    WHERE ID_MEDICION = v_ox;
 
- --1) Acciones correctivas de las alertas de prueba
+    comprobar(v_count = 1, 'Alerta de oxigeno generada');
 
-DELETE FROM ACCION_CORRECTIVA
-  WHERE ID_ALERTA IN (SELECT ID_ALERTA FROM ALERTA
-            WHERE (ID_SENSOR = 1 AND VALOR = 9.0)
-              OR (ID_SENSOR = 2 AND VALOR = 21));
+    SELECT COUNT(*) INTO v_count
+    FROM ALERTA
+    WHERE ID_MEDICION = v_temp;
 
- --2) Alertas de prueba
+    comprobar(v_count = 0, 'Temperatura normal sin alerta');
 
-DELETE FROM ALERTA
- WHERE (ID_SENSOR = 1 AND VALOR = 9.0)
-  OR (ID_SENSOR = 2 AND VALOR = 21);
+    SELECT COUNT(*) INTO v_count
+    FROM ACCION_CORRECTIVA
+    WHERE ID_ALERTA IN (
+        SELECT ID_ALERTA FROM ALERTA
+        WHERE ID_MEDICION IN (v_ph, v_ox, v_temp)
+    );
 
- --3) Mediciones de prueba
+    comprobar(v_count = 2, 'Dos acciones correctivas');
 
-DELETE FROM HISTORIAL_MEDICIONES
-  WHERE (ID_SENSOR = 1 AND VALOR = 9.0)
-   OR (ID_SENSOR = 2 AND VALOR = 21);
-COMMIT;
+    ROLLBACK TO prueba_trigger;
+
+    SELECT COUNT(*) INTO v_count
+    FROM HISTORIAL_MEDICIONES
+    WHERE ID_MEDICION IN (v_ph, v_ox, v_temp);
+
+    comprobar(v_count = 0, 'Rollback sin registros residuales');
+
+    DBMS_OUTPUT.PUT_LINE('=== 6/6 PRUEBAS SUPERADAS ===');
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK TO prueba_trigger;
+        RAISE;
+END;
+/
